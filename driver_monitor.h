@@ -1,6 +1,8 @@
 #ifndef DRIVER_MONITOR_H
 #define DRIVER_MONITOR_H
 
+//#include <mainwindow.h>
+
 #include <QString>
 #include <QDateTime>
 #include <QTime>
@@ -33,14 +35,14 @@ public:
     void head_parameters(int main_side, int minor_side);
     int percent;
 
-    void instance(char inst, bool &instance_trigger, int parameter1, int parameter2, int parameter3, QTime &instance_timer);
+    void instance(char inst, bool &instance_trigger, QTime &instance_timer, int parameter1, int threshold1, int parameter2 = 0, int threshold2 = 0, int parameter3 = 0, int threshold3 = 0);
     int status;
     bool instance_trigger;
 
     void shift_register(std::vector<int> &sample_vector, unsigned int size, bool print);
     int count;
 
-    void classify(std::vector<int> &sample_vector, char inst, bool &instance_trigger);//, QTime instance_timer);
+    void classify(std::vector<int> &sample_vector, char inst, bool &instance_trigger);
     string string_status;
 
     void guiDisplay_text(QString &instance_string, QTime instance_timer, QString &separate, int &total_count);

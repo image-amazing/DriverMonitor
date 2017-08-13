@@ -1,6 +1,17 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+QCPItemLine *HeadTurnLeft_threshold_line;
+QCPItemLine *HeadTurnRight_threshold_line;
+QCPItemLine *Blink_threshold_line;
+QCPItemLine *YawnMouth_threshold_line;
+
+int HeadTurnLeft_threshold = 65;
+int HeadTurnRight_threshold = 35;
+int Blink_threshold = 25;
+int YawnMouth_threshold = 30;
+int YawnEyes_threshold = 35;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -14,13 +25,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->HeadTurn_plot->axisRect()->setRangeDrag(Qt::Horizontal);
     ui->HeadTurn_plot->graph(0)->setLineStyle(QCPGraph::lsLine);
 
-    QCPItemLine *HeadTurnLeft_threshold_line = new QCPItemLine(ui->HeadTurn_plot);
+    HeadTurnLeft_threshold_line = new QCPItemLine(ui->HeadTurn_plot);
     HeadTurnLeft_threshold_line->setSelectable(true);
     HeadTurnLeft_threshold_line->setPen(QPen(Qt::DashDotLine));
     HeadTurnLeft_threshold_line->start->setCoords(QCPRange::minRange, 65);
     HeadTurnLeft_threshold_line->end->setCoords(QCPRange::maxRange, 65);
 
-    QCPItemLine *HeadTurnRight_threshold_line = new QCPItemLine(ui->HeadTurn_plot);
+    HeadTurnRight_threshold_line = new QCPItemLine(ui->HeadTurn_plot);
     HeadTurnRight_threshold_line->setSelectable(true);
     HeadTurnRight_threshold_line->setPen(QPen(Qt::DashDotLine));
     HeadTurnRight_threshold_line->start->setCoords(QCPRange::minRange, 35);
@@ -40,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->Blink_plot->graph(1)->setLineStyle(QCPGraph::lsLine);
     ui->Blink_plot->graph(1)->setPen(QPen(Qt::green));
 
-    QCPItemLine *Blink_threshold_line = new QCPItemLine(ui->Blink_plot);
+    Blink_threshold_line = new QCPItemLine(ui->Blink_plot);
     Blink_threshold_line->setSelectable(true);
     Blink_threshold_line->setPen(QPen(Qt::DashDotLine));
     Blink_threshold_line->start->setCoords(QCPRange::minRange, 25);
@@ -55,11 +66,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->Yawn_plot->graph(0)->setLineStyle((QCPGraph::lsLine));
     ui->Yawn_plot->graph(0)->setPen(QPen(Qt::green));
 
-    QCPItemLine *Yawn_threshold_line = new QCPItemLine(ui->Yawn_plot);
-    Yawn_threshold_line->setSelectable(true);
-    Yawn_threshold_line->setPen(QPen(Qt::DashDotLine));
-    Yawn_threshold_line->start->setCoords(QCPRange::minRange, 30);
-    Yawn_threshold_line->end->setCoords(QCPRange::maxRange, 30);
+    YawnMouth_threshold_line = new QCPItemLine(ui->Yawn_plot);
+    YawnMouth_threshold_line->setSelectable(true);
+    YawnMouth_threshold_line->setPen(QPen(Qt::DashDotLine));
+    YawnMouth_threshold_line->start->setCoords(QCPRange::minRange, 30);
+    YawnMouth_threshold_line->end->setCoords(QCPRange::maxRange, 30);
 
     timer = new QTimer(this);
 }
@@ -116,7 +127,6 @@ void MainWindow::update_window()
 {
     cap >>  frame;
 
-    //Convert OpenCV Mat image to Dlib array2d
     array2d<bgr_pixel> dlib_image;
     assign_image(dlib_image, cv_image<bgr_pixel>(frame));
 
@@ -139,15 +149,35 @@ void MainWindow::update_window()
         driver_monitor FaceRight(shape);
         FaceRight.measure(45, 30, 'x', 35, 31, 'x', 10);
 
+        if(ui->HeadTurnLeft_spinBox->value() != HeadTurnLeft_threshold)
+        {
+            HeadTurnLeft_threshold = ui->HeadTurnLeft_spinBox->value();
+            ui->HeadTurn_plot->removeItem(HeadTurnLeft_threshold_line);
+            HeadTurnLeft_threshold_line = new QCPItemLine(ui->HeadTurn_plot);
+            HeadTurnLeft_threshold_line->setPen(QPen(Qt::DashDotLine));
+            HeadTurnLeft_threshold_line->start->setCoords(QCPRange::minRange, HeadTurnLeft_threshold);
+            HeadTurnLeft_threshold_line->end->setCoords(QCPRange::maxRange, HeadTurnLeft_threshold);
+        }
+
         FaceLeft.head_parameters(FaceLeft.facial_feature, FaceRight.facial_feature);
-        FaceLeft.instance('h', FaceLeft_trigger, FaceLeft.percent, 0, 0, HeadTurn_timer);
+        FaceLeft.instance('h', FaceLeft_trigger, HeadTurn_timer, FaceLeft.percent, HeadTurnLeft_threshold);
         FaceLeft.shift_register(FaceLeft_register, 10, false);
         FaceLeft.classify(FaceLeft_register, 'l', FaceLeft_trigger);
         FaceLeft.guiDisplay_text(instance_string, HeadTurn_timer, HeadTurn_string, HeadTurn_count);
         FaceLeft.instance_rate(HeadTurn_rate, HeadTurn_time_rate, 0);
 
+        if(ui->HeadTurnRight_spinBox->value() != HeadTurnRight_threshold)
+        {
+            HeadTurnRight_threshold = ui->HeadTurnRight_spinBox->value();
+            ui->HeadTurn_plot->removeItem(HeadTurnRight_threshold_line);
+            HeadTurnRight_threshold_line = new QCPItemLine(ui->HeadTurn_plot);
+            HeadTurnRight_threshold_line->setPen(QPen(Qt::DashDotLine));
+            HeadTurnRight_threshold_line->start->setCoords(QCPRange::minRange, HeadTurnRight_threshold);
+            HeadTurnRight_threshold_line->end->setCoords(QCPRange::maxRange, HeadTurnRight_threshold);
+        }
+
         FaceRight.head_parameters(FaceRight.facial_feature, FaceLeft.facial_feature);
-        FaceRight.instance('h', FaceRight_trigger, FaceRight.percent, 0, 0, HeadTurn_timer);
+        FaceRight.instance('h', FaceRight_trigger, HeadTurn_timer, FaceRight.percent, 65);
         FaceRight.shift_register(FaceRight_register, 10, false);
         FaceRight.classify(FaceRight_register, 'r', FaceRight_trigger);
         FaceRight.guiDisplay_text(instance_string, HeadTurn_timer, HeadTurn_string, HeadTurn_count);
@@ -183,8 +213,18 @@ void MainWindow::update_window()
         ui->Blink_plot->replot();
         ui->Blink_plot->update();
 
+        if(ui->Blink_spinBox->value() != Blink_threshold)
+        {
+            Blink_threshold = ui->Blink_spinBox->value();
+            ui->Blink_plot->removeItem(Blink_threshold_line);
+            Blink_threshold_line = new QCPItemLine(ui->Blink_plot);
+            Blink_threshold_line->setPen(QPen(Qt::DashDotLine));
+            Blink_threshold_line->start->setCoords(QCPRange::minRange, Blink_threshold);
+            Blink_threshold_line->end->setCoords(QCPRange::maxRange, Blink_threshold);
+        }
+
         driver_monitor Blink(shape);
-        Blink.instance('b', Blink_trigger, LeftEye.percent, RightEye.percent, 0, Blink_timer);
+        Blink.instance('b', Blink_trigger, Blink_timer, LeftEye.percent, Blink_threshold, RightEye.percent, Blink_threshold);
         Blink.shift_register(Blink_register, 10, false);
         Blink.classify(Blink_register, 'b', Blink_trigger);
         Blink.guiDisplay_text(instance_string, Blink_timer, Blink_string, Blink_count);
@@ -196,11 +236,24 @@ void MainWindow::update_window()
         else
             ui->Blink_trigger_indicator->setStyleSheet("QLabel { background-color : darkgreen; }");
 
-        cout << ui->spinBox->value() << endl;
+        if(ui->YawnEyes_spinBox->value() != YawnEyes_threshold)
+        {
+            YawnEyes_threshold = ui->YawnEyes_spinBox->value();
+        }
+
+        if(ui->YawnMouth_spinBox->value() != YawnMouth_threshold)
+        {
+            YawnMouth_threshold = ui->YawnMouth_spinBox->value();
+            ui->Yawn_plot->removeItem(YawnMouth_threshold_line);
+            YawnMouth_threshold_line = new QCPItemLine(ui->Yawn_plot);
+            YawnMouth_threshold_line->setPen(QPen(Qt::DashDotLine));
+            YawnMouth_threshold_line->start->setCoords(QCPRange::minRange, YawnMouth_threshold);
+            YawnMouth_threshold_line->end->setCoords(QCPRange::maxRange, YawnMouth_threshold);
+        }
 
         driver_monitor Mouth(shape);
         Mouth.measure(66, 62, 'y', 64, 60, 'x', 100);
-        Mouth.instance('y', Yawn_trigger, Mouth.facial_feature, LeftEye.percent, RightEye.percent, Yawn_timer);
+        Mouth.instance('y', Yawn_trigger, Yawn_timer, Mouth.facial_feature, YawnMouth_threshold, LeftEye.percent, YawnEyes_threshold, RightEye.percent, YawnEyes_threshold);
         Mouth.shift_register(Yawn_register, 10, false);
         Mouth.classify(Yawn_register, 'y', Yawn_trigger);
         Mouth.guiDisplay_text(instance_string, Yawn_timer, Yawn_string, Yawn_count);

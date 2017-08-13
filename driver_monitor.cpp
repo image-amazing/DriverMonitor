@@ -38,12 +38,12 @@ void driver_monitor::head_parameters(int main_side, int minor_side)
     percent = (main_side * 100) / max;
 }
 
-void driver_monitor::instance(char inst, bool &instance_trigger, int parameter1, int parameter2, int parameter3, QTime &instance_timer)
+void driver_monitor::instance(char inst, bool &instance_trigger, QTime &instance_timer, int parameter1, int threshold1, int parameter2, int threshold2, int parameter3, int threshold3)
 {
     switch(inst)
     {
     case 'b':
-        if(parameter1 <= 25 || parameter2 <= 25)
+        if(parameter1 <= threshold1 || parameter2 <= threshold2)
         {
             if(instance_trigger == false)
                 instance_timer.start();
@@ -56,7 +56,7 @@ void driver_monitor::instance(char inst, bool &instance_trigger, int parameter1,
         }
         break;
     case 'y':
-        if(parameter1 > 30 && (parameter2 <= 35 || parameter3 <= 35))
+        if(parameter1 > threshold1 && (parameter2 <= threshold2 || parameter3 <= threshold3))
         {
             if(instance_trigger == false)
                 instance_timer.start();
@@ -69,7 +69,7 @@ void driver_monitor::instance(char inst, bool &instance_trigger, int parameter1,
         }
         break;
     case 'h':
-        if(parameter1 > 65)
+        if(parameter1 > threshold1)
         {
             if(instance_trigger == false)
                 instance_timer.start();

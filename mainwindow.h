@@ -1,11 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <driver_monitor.h>
+
 #include <QMainWindow>
 #include <QTimer>
 #include <QScrollBar>
-
-#include <driver_monitor.h>
 
 namespace Ui {
 class MainWindow;
