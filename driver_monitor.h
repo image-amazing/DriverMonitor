@@ -53,6 +53,8 @@ public:
     void instance_rate(std::vector<int> &instance_count, int time_rate, int threshold_time);
     int current_time_seconds;
 
+    void driver_status(std::vector<int> &instance_count, unsigned int threshold, char type);
+
 private:
     Mat image;
     const dlib::full_object_detection shape;

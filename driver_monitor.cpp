@@ -168,3 +168,22 @@ void driver_monitor::instance_rate(std::vector<int> &instance_count, int time_ra
             instance_count.erase(instance_count.begin());
     }
 }
+
+void driver_monitor::driver_status(std::vector<int> &instance_count, unsigned int threshold, char type)
+{
+    if(instance_count.size() >= threshold)
+    {
+        string status;
+        switch(type)
+        {
+        case 'a':
+            status = "drowsy";
+            break;
+        case 'b':
+            status = "distracted";
+            break;
+        }
+        cout << status << endl;
+        instance_count.clear();
+    }
+}

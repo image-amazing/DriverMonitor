@@ -241,6 +241,8 @@ void MainWindow::update_window()
             YawnEyes_threshold = ui->YawnEyes_spinBox->value();
         }
 
+        Blink.driver_status(SlowBlink_rate, 3, 'a');
+
         if(ui->YawnMouth_spinBox->value() != YawnMouth_threshold)
         {
             YawnMouth_threshold = ui->YawnMouth_spinBox->value();
@@ -269,6 +271,8 @@ void MainWindow::update_window()
             ui->Yawn_trigger_indicator->setStyleSheet("QLabel { background-color : lime; }");
         else
             ui->Yawn_trigger_indicator->setStyleSheet("QLabel { background-color : darkgreen; }");
+
+        Mouth.driver_status(Yawn_rate, 3, 'b');
 
         ui->textBrowser->setText(instance_string);
         QScrollBar *instance_string_sb = ui->textBrowser->verticalScrollBar();
