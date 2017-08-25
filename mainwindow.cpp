@@ -272,7 +272,7 @@ void MainWindow::update_window()
         else
             ui->Yawn_trigger_indicator->setStyleSheet("QLabel { background-color : darkgreen; }");
 
-        Mouth.driver_status(Yawn_rate, 3, 'b');
+        Mouth.driver_status(Yawn_rate, ui->Yawn_rate_threshold->value(), 'a');
 
         ui->textBrowser->setText(instance_string);
         QScrollBar *instance_string_sb = ui->textBrowser->verticalScrollBar();
