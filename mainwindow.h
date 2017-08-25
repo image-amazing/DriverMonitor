@@ -26,6 +26,8 @@ private slots:
 
     void update_window();
 
+    void on_pushButton_reset_clicked();
+
 private:
     Ui::MainWindow *ui;
 

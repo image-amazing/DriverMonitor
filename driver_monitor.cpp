@@ -134,6 +134,7 @@ void driver_monitor::guiDisplay_text(QString &instance_string, QTime instance_ti
         total_count++;
         instance_time = instance_timer.elapsed();
 
+        //Time stamp
         instance_string.append("[");
         instance_string.append(time_string);
         instance_string.append("] - ");

@@ -241,7 +241,7 @@ void MainWindow::update_window()
             YawnEyes_threshold = ui->YawnEyes_spinBox->value();
         }
 
-        Blink.driver_status(SlowBlink_rate, 3, 'a');
+        Blink.driver_status(SlowBlink_rate, ui->SlowBlink_rate_spinBox->value(), 'a');
 
         if(ui->YawnMouth_spinBox->value() != YawnMouth_threshold)
         {
@@ -355,7 +355,6 @@ void MainWindow::face_layout(const dlib::full_object_detection& shape)
     std::vector<cv::Point> points;
     int start_point[] = {0, 17, 22, 27, 30, 36, 42, 48, 60};
     int end_point[] = {16, 21, 26, 30, 35, 41, 47, 59, 67};
-    //bool isClosed[] = {false, false, false, false, true, true, true, true};
     bool isClosed;
 
     for(int j = 0; j <= 8 ; j++)
@@ -374,3 +373,38 @@ void MainWindow::face_layout(const dlib::full_object_detection& shape)
 }
 
 
+
+void MainWindow::on_pushButton_reset_clicked()
+{
+    LeftEye_max = 0;
+    RightEye_max = 0;
+    LeftEye_min = 100;
+    RightEye_min = 100;
+
+    FaceLeft_trigger = false;
+    FaceRight_trigger = false;
+    Blink_trigger = false;
+    Yawn_trigger = false;
+
+    instance_string.clear();
+    HeadTurn_string.clear();
+    Blink_string.clear();
+    Yawn_string.clear();
+
+    HeadTurn_rate.clear();
+    Blink_rate.clear();
+    SlowBlink_rate.clear();
+    Yawn_rate.clear();
+
+    HeadTurn_plot_data.clear();
+    LeftEye_plot_data.clear();
+    RightEye_plot_data.clear();
+    Mouth_plot_data.clear();
+    xAxis_plot_data.clear();
+
+    ui->HeadTurnLeft_spinBox->setValue(65);
+    ui->HeadTurnRight_spinBox->setValue(35);
+    ui->Blink_spinBox->setValue(25);
+    ui->YawnEyes_spinBox->setValue(35);
+    ui->YawnMouth_spinBox->setValue(30);
+}
