@@ -46,10 +46,10 @@ private:
     int LeftEye_max, LeftEye_min = 100;
     int RightEye_max, RightEye_min = 100;
 
-    bool FaceLeft_trigger = false;
-    bool FaceRight_trigger = false;
-    bool Blink_trigger = false;
-    bool Yawn_trigger = false;
+    bool FaceLeft_instanceTrigger = false;
+    bool FaceRight_instanceTrigger = false;
+    bool Blink_instanceTrigger= false;
+    bool Yawn_instanceTrigger = false;
 
     std::vector<int> FaceLeft_register;
     std::vector<int> FaceRight_register;
@@ -60,7 +60,7 @@ private:
     int Blink_count = 0;
     int Yawn_count = 0;
 
-    QString instance_string = "Start: \n";
+    QString main_string = "Start: \n";
     QString HeadTurn_string = "Start: \n";
     QString Blink_string = "Start: \n";
     QString Yawn_string = "Start: \n";
@@ -69,15 +69,20 @@ private:
     QTime Blink_timer;
     QTime Yawn_timer;
 
+    bool FaceLeft_displayTrigger = false;
+    bool FaceRight_displayTrigger = false;
+    bool Blink_displayTrigger = false;
+    bool Yawn_displayTrigger = false;
+
     std::vector<int> HeadTurn_rate;
     std::vector<int> Blink_rate;
     std::vector<int> SlowBlink_rate;
     std::vector<int> Yawn_rate;
 
-    int HeadTurn_time_rate = 10;
-    int Blink_time_rate = 10;
-    int SlowBlink_time_rate = 10;
-    int Yawn_time_rate = 10;
+    int HeadTurn_timeSpan = 10;
+    int Blink_timeSpan = 10;
+    int SlowBlink_timeSpan = 10;
+    int Yawn_timeSpan = 10;
 
     int blue;
     int green;

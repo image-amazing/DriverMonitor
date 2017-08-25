@@ -84,89 +84,76 @@ void driver_monitor::instance(char inst, bool &instance_trigger, QTime &instance
     }
 }
 
-void driver_monitor::shift_register(std::vector<int> &sample_vector, unsigned int size, bool print)
+void driver_monitor::classify(char inst, bool &instance_trigger, QTime instance_timer, int threshold_time, bool &display_trigger)
 {
-    sample_vector.insert(sample_vector.begin(), status);
-    if(sample_vector.size() > size)
-        sample_vector.pop_back();
-    count = 0;
-    for(unsigned int i = 0; i < sample_vector.size(); i++)
+    if(instance_trigger == true && status == 0)
     {
-        if(sample_vector.at(i) == 1)
-            count++;
-        if(print == true)
-            cout << sample_vector.at(i);
-    }
-    if(print == true)
-        cout << endl;
-}
-
-void driver_monitor::classify(std::vector<int> &sample_vector, char inst, bool &instance_trigger)
-{
-    if(count != 0 && instance_trigger == true)
-    {
-        if(sample_vector[0] == 0 && sample_vector[1] == 0 && sample_vector[2] == 0)
+        switch(inst)
         {
-            switch(inst)
-            {
-            case 'b':
-                string_status = "Blink";
-                break;
-            case 'y':
-                string_status = "Yawn";
-                break;
-            case 'l':
-                string_status = "Head turn left";
-                break;
-            case 'r':
-                string_status = "Head turn right";
-                break;
-            }
-            instance_trigger = false;
+        case 'b':
+            string_status = "Blink";
+            break;
+        case 'y':
+            string_status = "Yawn";
+            break;
+        case 'l':
+            string_status = "Head turn left";
+            break;
+        case 'r':
+            string_status = "Head turn right";
+            break;
+        }
+        instance_trigger = false;
+        if(instance_timer.elapsed() > threshold_time)
+        {
+            display_trigger = true;
+            instance_time = instance_timer.elapsed();
         }
     }
+
 }
 
-void driver_monitor::guiDisplay_text(QString &instance_string, QTime instance_timer, QString &separate, int &total_count)
-{
-    if(!string_status.empty())
-    {        
-        total_count++;
-        instance_time = instance_timer.elapsed();
-
-        //Time stamp
-        instance_string.append("[");
-        instance_string.append(time_string);
-        instance_string.append("] - ");
-        instance_string.append(QString::fromStdString(string_status));
-        instance_string.append(" ");
-        instance_string.append(QString::number(instance_time));
-        instance_string.append(" ms\n");
-
-        separate.append(QString::number(total_count));
-        separate.append(". [");
-        separate.append(time_string);
-        separate.append("] - ");
-        separate.append(QString::fromStdString(string_status));
-        separate.append(" ");
-        separate.append(QString::number(instance_time));
-        separate.append(" ms\n");
-    }
-}
-
-void driver_monitor::instance_rate(std::vector<int> &instance_count, int time_rate, int threshold_time)
+void driver_monitor::instance_rate(std::vector<int> &instance_count, int time_span, int threshold_time, bool &display_trigger)
 {
     current_time_seconds = (time.hour() * 60 * 60) + (time.minute() * 60) + time.second();
-    if(!string_status.empty())
+    if(display_trigger == true && instance_time > threshold_time)
     {
-        if(instance_time > threshold_time)
-            instance_count.push_back(current_time_seconds);
+        instance_count.push_back(current_time_seconds);
     }
 
     for(unsigned int i = 0; i < instance_count.size(); i++)
     {
-        if((current_time_seconds - instance_count.front()) > time_rate)
+        if((current_time_seconds - instance_count.front()) > time_span)
             instance_count.erase(instance_count.begin());
+    }
+}
+
+void driver_monitor::guiDisplay_text(QString &main_string,  QString &instance_string, QTime instance_timer, int &count, bool &display_trigger)
+{
+    if(display_trigger == true)
+    {        
+        count++;
+        //instance_time = instance_timer.elapsed();
+
+        //Time stamp
+        main_string += "[";
+        main_string += time_string;
+        main_string += "] - ";
+        main_string += QString::fromStdString(string_status);
+        main_string += " ";
+        main_string += QString::number(instance_time);
+        main_string += " ms\n";
+
+        instance_string += QString::number(count);
+        instance_string += ". [";
+        instance_string += time_string;
+        instance_string += "] - ";
+        instance_string += QString::fromStdString(string_status);
+        instance_string += " ";
+        instance_string += QString::number(instance_time);
+        instance_string += " ms\n";
+
+        display_trigger = false;
     }
 }
 

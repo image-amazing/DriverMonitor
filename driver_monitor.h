@@ -37,21 +37,17 @@ public:
 
     void instance(char inst, bool &instance_trigger, QTime &instance_timer, int parameter1, int threshold1, int parameter2 = 0, int threshold2 = 0, int parameter3 = 0, int threshold3 = 0);
     int status;
-    bool instance_trigger;
 
-    void shift_register(std::vector<int> &sample_vector, unsigned int size, bool print);
-    int count;
-
-    void classify(std::vector<int> &sample_vector, char inst, bool &instance_trigger);
+    void classify(char inst, bool &instance_trigger, QTime instance_timer, int threshold_time, bool &display_trigger);
     string string_status;
 
-    void guiDisplay_text(QString &instance_string, QTime instance_timer, QString &separate, int &total_count);
+    void instance_rate(std::vector<int> &instance_count, int time_span, int threshold_time, bool &display_trigger);
+    int current_time_seconds;
+
+    void guiDisplay_text(QString &main_string, QString &instance_string, QTime instance_timer, int &count, bool &display_trigger);
     QTime time = QTime::currentTime();
     QString time_string = time.toString("hh:mm:ss ap");
-    int instance_time;
-
-    void instance_rate(std::vector<int> &instance_count, int time_rate, int threshold_time);
-    int current_time_seconds;
+    int instance_time;    
 
     void driver_status(std::vector<int> &instance_count, unsigned int threshold, char type);
 

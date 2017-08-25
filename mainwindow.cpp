@@ -117,10 +117,10 @@ void MainWindow::on_pushButton_close_camera_clicked()
 
     cout << "camera is closed" << endl;
 
-    FaceLeft_trigger = false;
-    FaceRight_trigger = false;
-    Blink_trigger = false;
-    Yawn_trigger = false;
+    FaceLeft_instanceTrigger = false;
+    FaceRight_instanceTrigger = false;
+    Blink_instanceTrigger = false;
+    Yawn_instanceTrigger = false;
 }
 
 void MainWindow::update_window()
@@ -160,11 +160,11 @@ void MainWindow::update_window()
         }
 
         FaceLeft.head_parameters(FaceLeft.facial_feature, FaceRight.facial_feature);
-        FaceLeft.instance('h', FaceLeft_trigger, HeadTurn_timer, FaceLeft.percent, HeadTurnLeft_threshold);
-        FaceLeft.shift_register(FaceLeft_register, 10, false);
-        FaceLeft.classify(FaceLeft_register, 'l', FaceLeft_trigger);
-        FaceLeft.guiDisplay_text(instance_string, HeadTurn_timer, HeadTurn_string, HeadTurn_count);
-        FaceLeft.instance_rate(HeadTurn_rate, HeadTurn_time_rate, 0);
+        FaceLeft.instance('h', FaceLeft_instanceTrigger, HeadTurn_timer, FaceLeft.percent, HeadTurnLeft_threshold);
+        //FaceLeft.shift_register(FaceLeft_register, 10, false);
+        FaceLeft.classify('l', FaceLeft_instanceTrigger, HeadTurn_timer, 0, FaceLeft_displayTrigger);
+        FaceLeft.instance_rate(HeadTurn_rate, HeadTurn_timeSpan, 0, FaceLeft_displayTrigger);
+        FaceLeft.guiDisplay_text(main_string, HeadTurn_string, HeadTurn_timer, HeadTurn_count, FaceLeft_displayTrigger);
 
         if(ui->HeadTurnRight_spinBox->value() != HeadTurnRight_threshold)
         {
@@ -177,11 +177,11 @@ void MainWindow::update_window()
         }
 
         FaceRight.head_parameters(FaceRight.facial_feature, FaceLeft.facial_feature);
-        FaceRight.instance('h', FaceRight_trigger, HeadTurn_timer, FaceRight.percent, 65);
-        FaceRight.shift_register(FaceRight_register, 10, false);
-        FaceRight.classify(FaceRight_register, 'r', FaceRight_trigger);
-        FaceRight.guiDisplay_text(instance_string, HeadTurn_timer, HeadTurn_string, HeadTurn_count);
-        FaceRight.instance_rate(HeadTurn_rate, HeadTurn_time_rate, 0);
+        FaceRight.instance('h', FaceRight_instanceTrigger, HeadTurn_timer, FaceRight.percent, 65);
+        //FaceRight.shift_register(FaceRight_register, 10, false);
+        FaceRight.classify('r', FaceRight_instanceTrigger, HeadTurn_timer, 0, FaceRight_displayTrigger);
+        FaceRight.instance_rate(HeadTurn_rate, HeadTurn_timeSpan, 0, FaceRight_displayTrigger);
+        FaceRight.guiDisplay_text(main_string, HeadTurn_string, HeadTurn_timer, HeadTurn_count, FaceRight_displayTrigger);
 
         HeadTurn_plot_data.append(double(FaceLeft.percent));
         xAxis_plot_data.append(double(HeadTurn_plot_data.size()));
@@ -191,7 +191,7 @@ void MainWindow::update_window()
         ui->HeadTurn_plot->replot();
         ui->HeadTurn_plot->update();
 
-        if(FaceLeft_trigger == true || FaceRight_trigger == true)
+        if(FaceLeft_instanceTrigger == true || FaceRight_instanceTrigger == true)
             ui->HeadTurn_trigger_indicator->setStyleSheet("QLabel { background-color : lime; }");
         else
             ui->HeadTurn_trigger_indicator->setStyleSheet("QLabel { background-color : darkgreen; }");
@@ -224,14 +224,14 @@ void MainWindow::update_window()
         }
 
         driver_monitor Blink(shape);
-        Blink.instance('b', Blink_trigger, Blink_timer, LeftEye.percent, Blink_threshold, RightEye.percent, Blink_threshold);
-        Blink.shift_register(Blink_register, 10, false);
-        Blink.classify(Blink_register, 'b', Blink_trigger);
-        Blink.guiDisplay_text(instance_string, Blink_timer, Blink_string, Blink_count);
-        Blink.instance_rate(Blink_rate, Blink_time_rate, 0);
-        Blink.instance_rate(SlowBlink_rate, SlowBlink_time_rate, 500);
+        Blink.instance('b', Blink_instanceTrigger, Blink_timer, LeftEye.percent, Blink_threshold, RightEye.percent, Blink_threshold);
+        //Blink.shift_register(Blink_register, 10, false);
+        Blink.classify('b', Blink_instanceTrigger, Blink_timer, 0, Blink_displayTrigger);
+        Blink.instance_rate(Blink_rate, Blink_timeSpan, 0, Blink_displayTrigger);
+        Blink.instance_rate(SlowBlink_rate, SlowBlink_timeSpan, 500, Blink_displayTrigger);
+        Blink.guiDisplay_text(main_string, Blink_string, Blink_timer, Blink_count, Blink_displayTrigger);
 
-        if(Blink_trigger == true)
+        if(Blink_instanceTrigger == true)
             ui->Blink_trigger_indicator->setStyleSheet("QLabel { background-color : lime; }");
         else
             ui->Blink_trigger_indicator->setStyleSheet("QLabel { background-color : darkgreen; }");
@@ -255,11 +255,11 @@ void MainWindow::update_window()
 
         driver_monitor Mouth(shape);
         Mouth.measure(66, 62, 'y', 64, 60, 'x', 100);
-        Mouth.instance('y', Yawn_trigger, Yawn_timer, Mouth.facial_feature, YawnMouth_threshold, LeftEye.percent, YawnEyes_threshold, RightEye.percent, YawnEyes_threshold);
-        Mouth.shift_register(Yawn_register, 10, false);
-        Mouth.classify(Yawn_register, 'y', Yawn_trigger);
-        Mouth.guiDisplay_text(instance_string, Yawn_timer, Yawn_string, Yawn_count);
-        Mouth.instance_rate(Yawn_rate, Yawn_time_rate, 700);
+        Mouth.instance('y', Yawn_instanceTrigger, Yawn_timer, Mouth.facial_feature, YawnMouth_threshold, LeftEye.percent, YawnEyes_threshold, RightEye.percent, YawnEyes_threshold);
+        //Mouth.shift_register(Yawn_register, 10, false);
+        Mouth.classify('y', Yawn_instanceTrigger, Yawn_timer, 200, Yawn_displayTrigger);
+        Mouth.instance_rate(Yawn_rate, Yawn_timeSpan, 200, Yawn_displayTrigger);
+        Mouth.guiDisplay_text(main_string, Yawn_string, Yawn_timer, Yawn_count, Yawn_displayTrigger);
 
         Mouth_plot_data.append(Mouth.facial_feature);
         ui->Yawn_plot->graph(0)->setData(xAxis_plot_data, Mouth_plot_data);
@@ -267,14 +267,14 @@ void MainWindow::update_window()
         ui->Yawn_plot->replot();
         ui->Yawn_plot->update();
 
-        if(Yawn_trigger == true)
+        if(Yawn_instanceTrigger == true)
             ui->Yawn_trigger_indicator->setStyleSheet("QLabel { background-color : lime; }");
         else
             ui->Yawn_trigger_indicator->setStyleSheet("QLabel { background-color : darkgreen; }");
 
         Mouth.driver_status(Yawn_rate, ui->Yawn_rate_threshold->value(), 'a');
 
-        ui->textBrowser->setText(instance_string);
+        ui->textBrowser->setText(main_string);
         QScrollBar *instance_string_sb = ui->textBrowser->verticalScrollBar();
         instance_string_sb->setValue(instance_string_sb->maximum());
 
@@ -284,7 +284,7 @@ void MainWindow::update_window()
 
         QString HeadTurn_rate_string;
         HeadTurn_rate_string += "Head turn rate(";
-        HeadTurn_rate_string += QString::number(HeadTurn_time_rate);
+        HeadTurn_rate_string += QString::number(HeadTurn_timeSpan);
         HeadTurn_rate_string += "s): ";
         HeadTurn_rate_string += QString::number(HeadTurn_rate.size());
         ui->HeadTurn_rate_text->setText(HeadTurn_rate_string);
@@ -295,14 +295,14 @@ void MainWindow::update_window()
 
         QString Blink_rate_string;
         Blink_rate_string.append("Blink rate (");
-        Blink_rate_string.append(QString::number(Blink_time_rate));
+        Blink_rate_string.append(QString::number(Blink_timeSpan));
         Blink_rate_string.append("s): ");
         Blink_rate_string.append(QString::number(Blink_rate.size()));
         ui->Blink_rate_text->setText(Blink_rate_string);
 
         QString SlowBlink_rate_string;
         SlowBlink_rate_string.append("Slow Blink rate (");
-        SlowBlink_rate_string.append(QString::number(SlowBlink_time_rate));
+        SlowBlink_rate_string.append(QString::number(SlowBlink_timeSpan));
         SlowBlink_rate_string.append("s): ");
         SlowBlink_rate_string.append(QString::number(SlowBlink_rate.size()));
         ui->SlowBlink_rate_text->setText(SlowBlink_rate_string);
@@ -313,7 +313,7 @@ void MainWindow::update_window()
 
         QString Yawn_rate_string;
         Yawn_rate_string.append("Yawn rate (");
-        Yawn_rate_string.append(QString::number(Yawn_time_rate));
+        Yawn_rate_string.append(QString::number(Yawn_timeSpan));
         Yawn_rate_string.append("s): ");
         Yawn_rate_string.append(QString::number(Yawn_rate.size()));
         ui->Yawn_rate_text->setText(Yawn_rate_string);
@@ -381,12 +381,12 @@ void MainWindow::on_pushButton_reset_clicked()
     LeftEye_min = 100;
     RightEye_min = 100;
 
-    FaceLeft_trigger = false;
-    FaceRight_trigger = false;
-    Blink_trigger = false;
-    Yawn_trigger = false;
+    FaceLeft_instanceTrigger = false;
+    FaceRight_instanceTrigger = false;
+    Blink_instanceTrigger = false;
+    Yawn_instanceTrigger = false;
 
-    instance_string.clear();
+    main_string.clear();
     HeadTurn_string.clear();
     Blink_string.clear();
     Yawn_string.clear();
