@@ -19,6 +19,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    void show_frame(Mat &);
+    void face_layout(const dlib::full_object_detection&);
+    void ui_functions();
+
 private slots:
     void on_pushButton_open_camera_clicked();
 
@@ -39,9 +43,6 @@ private:
 
     frontal_face_detector detector;
     shape_predictor shape_model;
-
-    void show_frame(Mat &);
-    void face_layout(const dlib::full_object_detection&);
 
     int LeftEye_max, LeftEye_min = 100;
     int RightEye_max, RightEye_min = 100;
@@ -89,11 +90,11 @@ private:
     int green;
     int red;
 
-    QVector<double> HeadTurn_plot_data;
-    QVector<double> LeftEye_plot_data, RightEye_plot_data;
-    QVector<double> Mouth_plot_data;
+    QVector<double> HeadTurn_PlotData;
+    QVector<double> LeftEye_PlotData, RightEye_PlotData;
+    QVector<double> Mouth_PlotData;
 
-    QVector<double> xAxis_plot_data;
+    QVector<double> xAxis_PlotData;
 };
 
 #endif // MAINWINDOW_H

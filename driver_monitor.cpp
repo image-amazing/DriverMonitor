@@ -79,7 +79,6 @@ void driver_monitor::instance(char inst, bool &instance_trigger, QTime &instance
         else
         {
             status = 0;
-            //instance_time = 0;
         }
         break;
     }
@@ -132,10 +131,7 @@ void driver_monitor::instance_rate(std::vector<int> &instance_count, int time_sp
 void driver_monitor::guiDisplay_text(QString &main_string,  QString &instance_string, int &count, bool &display_trigger)
 {
     if(display_trigger == true)
-    {        
-        count++;
-
-        //Time stamp
+    {
         main_string += "[";
         main_string += time_string;
         main_string += "] - ";
@@ -144,6 +140,7 @@ void driver_monitor::guiDisplay_text(QString &main_string,  QString &instance_st
         main_string += QString::number(instance_time);
         main_string += " ms\n";
 
+        count++;
         instance_string += QString::number(count);
         instance_string += ". [";
         instance_string += time_string;
@@ -178,7 +175,7 @@ void driver_monitor::DriverStatus_Drowsy(unsigned int threshold, std::vector<int
 void driver_monitor::DriverStatus_Distracted(int threshold, QTime &instance_timer, int instance_count, QString &main_string)
 {
     string driver_stringStatus;
-    static int HeadTurn_PrevCount;
+    static int HeadTurn_PrevCount = 1;
     if(instance_timer.elapsed() > threshold && HeadTurn_PrevCount != instance_count && status == 1)
     {
         driver_stringStatus = "Distracted";
@@ -197,7 +194,7 @@ void driver_monitor::DriverStatus_Distracted(int threshold, QTime &instance_time
 void driver_monitor::DriverStatus_Asleep(int threshold, QTime &instance_timer, int instance_count, QString &main_string)
 {
     string driver_stringStatus;
-    static int Blink_PrevCount;
+    static int Blink_PrevCount = 1;
     if(instance_timer.elapsed() > threshold && Blink_PrevCount != instance_count && status == 1)
     {
         driver_stringStatus = "Asleep";
