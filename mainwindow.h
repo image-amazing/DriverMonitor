@@ -51,14 +51,15 @@ private:
     bool Blink_instanceTrigger= false;
     bool Yawn_instanceTrigger = false;
 
-    std::vector<int> FaceLeft_register;
-    std::vector<int> FaceRight_register;
-    std::vector<int> Blink_register;
-    std::vector<int> Yawn_register;
-
     int HeadTurn_count = 0;
+    int HeadTurn_prevCount;
     int Blink_count = 0;
     int Yawn_count = 0;
+
+    int HeadTurn_thresholdTime = 0;
+    int Blink_thresholdTime = 0;
+    int SlowBlink_thresholdTime = 200;
+    int Yawn_thresholdTime = 200;
 
     QString main_string = "Start: \n";
     QString HeadTurn_string = "Start: \n";
@@ -79,10 +80,10 @@ private:
     std::vector<int> SlowBlink_rate;
     std::vector<int> Yawn_rate;
 
-    int HeadTurn_timeSpan = 10;
-    int Blink_timeSpan = 10;
-    int SlowBlink_timeSpan = 10;
-    int Yawn_timeSpan = 10;
+    int HeadTurn_refreshRate = 10;
+    int Blink_refreshRate = 10;
+    int SlowBlink_refreshRate = 10;
+    int Yawn_refreshRate = 10;
 
     int blue;
     int green;

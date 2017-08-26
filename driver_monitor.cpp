@@ -79,6 +79,7 @@ void driver_monitor::instance(char inst, bool &instance_trigger, QTime &instance
         else
         {
             status = 0;
+            //instance_time = 0;
         }
         break;
     }
@@ -128,12 +129,11 @@ void driver_monitor::instance_rate(std::vector<int> &instance_count, int time_sp
     }
 }
 
-void driver_monitor::guiDisplay_text(QString &main_string,  QString &instance_string, QTime instance_timer, int &count, bool &display_trigger)
+void driver_monitor::guiDisplay_text(QString &main_string,  QString &instance_string, int &count, bool &display_trigger)
 {
     if(display_trigger == true)
     {        
         count++;
-        //instance_time = instance_timer.elapsed();
 
         //Time stamp
         main_string += "[";
@@ -157,21 +157,58 @@ void driver_monitor::guiDisplay_text(QString &main_string,  QString &instance_st
     }
 }
 
-void driver_monitor::driver_status(std::vector<int> &instance_count, unsigned int threshold, char type)
+void driver_monitor::DriverStatus_Drowsy(unsigned int threshold, std::vector<int> &instance_count, QString &main_string)
 {
+    string driver_stringStatus;
     if(instance_count.size() >= threshold)
     {
-        string status;
-        switch(type)
-        {
-        case 'a':
-            status = "drowsy";
-            break;
-        case 'b':
-            status = "distracted";
-            break;
-        }
-        cout << status << endl;
+        driver_stringStatus = "Drowsy";
         instance_count.clear();
+    }
+    if(!driver_stringStatus.empty())
+    {
+        main_string += "[";
+        main_string += time_string;
+        main_string += "] - ";
+        main_string += QString::fromStdString(driver_stringStatus);
+        main_string += "\n";
+    }
+}
+
+void driver_monitor::DriverStatus_Distracted(int threshold, QTime &instance_timer, int instance_count, QString &main_string)
+{
+    string driver_stringStatus;
+    static int HeadTurn_PrevCount;
+    if(instance_timer.elapsed() > threshold && HeadTurn_PrevCount != instance_count && status == 1)
+    {
+        driver_stringStatus = "Distracted";
+        HeadTurn_PrevCount = instance_count;
+    }
+    if(!driver_stringStatus.empty())
+    {
+        main_string += "[";
+        main_string += time_string;
+        main_string += "] - ";
+        main_string += QString::fromStdString(driver_stringStatus);
+        main_string += "\n";
+    }
+}
+
+void driver_monitor::DriverStatus_Asleep(int threshold, QTime &instance_timer, int instance_count, QString &main_string)
+{
+    string driver_stringStatus;
+    static int Blink_PrevCount;
+    if(instance_timer.elapsed() > threshold && Blink_PrevCount != instance_count && status == 1)
+    {
+        driver_stringStatus = "Asleep";
+        Blink_PrevCount = instance_count;
+    }
+    if(!driver_stringStatus.empty())
+    {
+        main_string += "[";
+        main_string += time_string;
+        main_string += "] - ";
+        main_string += QString::fromStdString(driver_stringStatus);
+        main_string += "\n";
     }
 }

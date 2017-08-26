@@ -44,12 +44,14 @@ public:
     void instance_rate(std::vector<int> &instance_count, int time_span, int threshold_time, bool &display_trigger);
     int current_time_seconds;
 
-    void guiDisplay_text(QString &main_string, QString &instance_string, QTime instance_timer, int &count, bool &display_trigger);
+    void guiDisplay_text(QString &main_string, QString &instance_string, int &count, bool &display_trigger);
     QTime time = QTime::currentTime();
     QString time_string = time.toString("hh:mm:ss ap");
     int instance_time;    
 
-    void driver_status(std::vector<int> &instance_count, unsigned int threshold, char type);
+    void DriverStatus_Drowsy(unsigned int threshold, std::vector<int> &instance_count, QString &main_string);
+    void DriverStatus_Distracted(int threshold, QTime &instance_timer, int instance_count, QString &main_string);
+    void DriverStatus_Asleep(int threshold, QTime &instance_timer, int instance_count, QString &main_string);
 
 private:
     Mat image;
