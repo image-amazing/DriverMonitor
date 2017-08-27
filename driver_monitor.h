@@ -39,12 +39,11 @@ public:
     int status;
 
     void classify(char inst, bool &instance_trigger, QTime instance_timer, int threshold_time, bool &display_trigger);
-    string string_status;
+    QString string_status;
 
     void instance_rate(std::vector<int> &instance_count, int time_span, int threshold_time, bool &display_trigger);
     int current_time_seconds;
 
-    void guiDisplay_text(QString &main_string, QString &instance_string, int &count, bool &display_trigger);
     QTime time = QTime::currentTime();
     QString time_string = time.toString("hh:mm:ss ap");
     int instance_time;    
@@ -52,6 +51,7 @@ public:
     void DriverStatus_Drowsy(unsigned int threshold, std::vector<int> &instance_count, QString &main_string);
     void DriverStatus_Distracted(int threshold, QTime &instance_timer, int instance_count, QString &main_string);
     void DriverStatus_Asleep(int threshold, QTime &instance_timer, int instance_count, QString &main_string);
+    QString DriverStatus_string;
 
 private:
     Mat image;

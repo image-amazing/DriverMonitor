@@ -6,6 +6,9 @@
 #include <QMainWindow>
 #include <QTimer>
 #include <QScrollBar>
+#include <QFile>
+#include <QTextStream>
+#include <QStringList>
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +25,7 @@ public:
     void show_frame(Mat &);
     void face_layout(const dlib::full_object_detection&);
     void ui_functions();
+    void Write_file(QString FileName);
 
 private slots:
     void on_pushButton_open_camera_clicked();
