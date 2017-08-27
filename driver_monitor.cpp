@@ -148,7 +148,7 @@ void driver_monitor::DriverStatus_Drowsy(unsigned int threshold, std::vector<int
 void driver_monitor::DriverStatus_Distracted(int threshold, QTime &instance_timer, int instance_count, QString &main_string)
 {
     DriverStatus_string.clear();
-    static int HeadTurn_PrevCount = 1;
+    static int HeadTurn_PrevCount = -1;
     if(instance_timer.elapsed() > threshold && HeadTurn_PrevCount != instance_count && status == 1)
     {
         DriverStatus_string = "Distracted";
@@ -167,7 +167,7 @@ void driver_monitor::DriverStatus_Distracted(int threshold, QTime &instance_time
 void driver_monitor::DriverStatus_Asleep(int threshold, QTime &instance_timer, int instance_count, QString &main_string)
 {
     DriverStatus_string.clear();
-    static int Blink_PrevCount = 1;
+    static int Blink_PrevCount = -1;
     if(instance_timer.elapsed() > threshold && Blink_PrevCount != instance_count && status == 1)
     {
         DriverStatus_string = "Asleep";
