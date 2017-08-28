@@ -90,6 +90,28 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->Yawn_tableWidget->setColumnCount(3);
     ui->Yawn_tableWidget->setHorizontalHeaderLabels(HeaderName);
+
+
+    //ui->Main_tableWidget->resizeColumnsToContents();
+
+    ui->Main_tableWidget->setColumnWidth(0, 78);
+    ui->Main_tableWidget->setColumnWidth(1, 96);
+    ui->Main_tableWidget->setColumnWidth(2, 135);
+
+    ui->HeadTurn_tableWidget->setColumnWidth(0, 78);
+    ui->HeadTurn_tableWidget->setColumnWidth(1, 96);
+    ui->HeadTurn_tableWidget->setColumnWidth(2, 135);
+
+    ui->Blink_tableWidget->setColumnWidth(0, 78);
+    ui->Blink_tableWidget->setColumnWidth(1, 96);
+    ui->Blink_tableWidget->setColumnWidth(2, 135);
+
+    ui->Yawn_tableWidget->setColumnWidth(0, 78);
+    ui->Yawn_tableWidget->setColumnWidth(1, 96);
+    ui->Yawn_tableWidget->setColumnWidth(2, 135);
+
+    detector = get_frontal_face_detector();
+    deserialize("C://shape_predictor_68_face_landmarks.dat") >> shape_model;
 }
 
 MainWindow::~MainWindow()
@@ -113,10 +135,7 @@ void MainWindow::on_pushButton_open_camera_clicked()
         connect(timer, SIGNAL(timeout()), this, SLOT(update_window()));
         timer->start(20);
 
-        ui->pushButton_close_camera->setEnabled(true);
-
-        detector = get_frontal_face_detector();
-        deserialize("C://shape_predictor_68_face_landmarks.dat") >> shape_model;
+        ui->pushButton_close_camera->setEnabled(true);        
     }
 
     HeadTurn_timer.start();
@@ -140,9 +159,22 @@ void MainWindow::on_pushButton_close_camera_clicked()
     Yawn_instanceTrigger = false;
 }
 
+void MainWindow::on_LoadVideo_pushButton_clicked()
+{
+    cap.open(ui->VideoInputPath_lineEdit->text().toStdString());
+
+    if(!cap.isOpened())
+        cout << "video file is not loaded" << endl;
+    else
+    {
+        connect(timer, SIGNAL(timeout()), this, SLOT(update_window()));
+        timer->start(20);
+    }
+}
+
 void MainWindow::update_window()
 {
-    cap >>  frame;
+    cap >> frame;
 
     array2d<bgr_pixel> dlib_image;
     assign_image(dlib_image, cv_image<bgr_pixel>(frame));
@@ -500,24 +532,12 @@ void MainWindow::ui_functions()
         }
     }
 
-    ui->Main_tableWidget->resizeColumnsToContents();
 
-    ui->HeadTurn_tableWidget->setColumnWidth(0, 78);
-    ui->HeadTurn_tableWidget->setColumnWidth(1, 96);
-    ui->HeadTurn_tableWidget->setColumnWidth(2, 135);
+    int tableWidget_width = ui->Main_tableWidget->horizontalHeader()->length()
+                          + ui->Main_tableWidget->verticalScrollBar()->size().width()
+                          + ui->Main_tableWidget->verticalHeader()->width();
 
-    ui->Blink_tableWidget->setColumnWidth(0, 78);
-    ui->Blink_tableWidget->setColumnWidth(1, 96);
-    ui->Blink_tableWidget->setColumnWidth(2, 135);
-
-    ui->Yawn_tableWidget->setColumnWidth(0, 78);
-    ui->Yawn_tableWidget->setColumnWidth(1, 96);
-    ui->Yawn_tableWidget->setColumnWidth(2, 135);
-
-    int tableWidget_width = ui->HeadTurn_tableWidget->horizontalHeader()->length()
-                          + ui->HeadTurn_tableWidget->verticalScrollBar()->size().width()
-                          + ui->HeadTurn_tableWidget->verticalHeader()->width();
-
+    ui->Main_tableWidget->setMinimumWidth(tableWidget_width);
     ui->HeadTurn_tableWidget->setMinimumWidth(tableWidget_width);
     ui->Blink_tableWidget->setMinimumWidth(tableWidget_width);
     ui->Yawn_tableWidget->setMinimumWidth(tableWidget_width);
@@ -529,20 +549,18 @@ void MainWindow::ui_functions()
     ui->HeadTurn_tableWidget->scrollToBottom();
     ui->Blink_tableWidget->scrollToBottom();
     ui->Yawn_tableWidget->scrollToBottom();
-
-
 }
 
 void MainWindow::show_frame(Mat &image)
 {
-    Mat resized_image = image.clone();
+//    Mat resized_image = image.clone();
 
-    int width_of_label = ui->label_camera->width();
-    int height_of_label = ui->label_camera->height();
+//    int width_of_label = ui->label_camera->width();
+//    int height_of_label = ui->label_camera->height();
 
-    Size size(width_of_label, height_of_label);
+//    Size size(width_of_label, height_of_label);
 
-    cv::resize(image, resized_image, size);
+//    cv::resize(image, resized_image, size);
     cvtColor(image, image, CV_BGR2RGB);
     QImage qt_image((const unsigned char*) (image.data), image.cols, image.rows, QImage::Format_RGB888);
     ui->label_camera->setPixmap(QPixmap::fromImage(qt_image));
@@ -689,3 +707,5 @@ void MainWindow::on_SaveOutputData_pushButton_clicked()
     file.flush();
     file.close();
 }
+
+

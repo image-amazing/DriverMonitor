@@ -39,6 +39,8 @@ private slots:
 
     void on_SaveOutputData_pushButton_clicked();
 
+    void on_LoadVideo_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
