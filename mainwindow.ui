@@ -194,7 +194,7 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -843,24 +843,7 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
         <string>Others</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_7">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_4">
-          <property name="text">
-           <string>Face Layout Color:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Green</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0">
+        <item row="11" column="0">
          <spacer name="verticalSpacer_2">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -873,18 +856,25 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
           </property>
          </spacer>
         </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_3">
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Red</string>
+           <string>Green</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QSlider" name="blue_horizontalSlider">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Face Layout Color:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QSlider" name="red_horizontalSlider">
           <property name="maximum">
            <number>255</number>
           </property>
@@ -906,8 +896,18 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
           </property>
          </widget>
         </item>
-        <item row="6" column="0">
-         <widget class="QSlider" name="red_horizontalSlider">
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Red</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QSlider" name="blue_horizontalSlider">
           <property name="maximum">
            <number>255</number>
           </property>
@@ -925,6 +925,55 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
+        </item>
+        <item row="9" column="0">
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="FolderPath_lineEdit">
+            <property name="text">
+             <string>C:\Users\Joseph\Desktop\</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>Output Folder Path:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QCheckBox" name="includeCount_checkBox">
+            <property name="text">
+             <string>Include instance count</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QPushButton" name="SaveOutputData_pushButton">
+            <property name="text">
+             <string>Save</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="FileName_lineEdit">
+            <property name="text">
+             <string>OutputData</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_22">
+            <property name="text">
+             <string>File Name:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>

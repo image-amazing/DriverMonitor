@@ -38,3 +38,4 @@ QMAKE_CXXFLAGS_RELEASE += -mavx
 INCLUDEPATH += C:\opencv\QT_dlib\build\include
 LIBS += -LC:\opencv\QT_dlib\dlib
 LIBS += -ldlib
+

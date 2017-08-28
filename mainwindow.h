@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
+#include <QFileInfo>
 
 namespace Ui {
 class MainWindow;
@@ -25,7 +26,7 @@ public:
     void show_frame(Mat &);
     void face_layout(const dlib::full_object_detection&);
     void ui_functions();
-    void Write_file(QString FileName);
+    void Write_file(QString FilePath);
 
 private slots:
     void on_pushButton_open_camera_clicked();
@@ -35,6 +36,8 @@ private slots:
     void update_window();
 
     void on_pushButton_reset_clicked();
+
+    void on_SaveOutputData_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;

@@ -12,6 +12,8 @@ int Blink_threshold = 25;
 int YawnMouth_threshold = 30;
 int YawnEyes_threshold = 35;
 
+QString OutputData_path;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -527,35 +529,8 @@ void MainWindow::ui_functions()
     ui->HeadTurn_tableWidget->scrollToBottom();
     ui->Blink_tableWidget->scrollToBottom();
     ui->Yawn_tableWidget->scrollToBottom();
-}
 
-void MainWindow::Write_file(QString FileName)
-{
-    QFile file(FileName);
 
-    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        cout << "could not open" << endl;
-        return;
-    }
-
-    QTextStream out(&file);
-
-    for(int i = 0; i < ui->HeadTurn_tableWidget->rowCount(); i++)
-    {
-//        QTableWidgetItem *item = ui->tableWidget->verticalHeaderItem(i);
-//        out << item->text() << ', ';
-        out << ui->HeadTurn_tableWidget->verticalHeaderItem(i)->text() << ", ";
-        for(int j = 0; j < ui->HeadTurn_tableWidget->columnCount(); j++)
-        {
-            //item_StrList.clear();
-            out << ui->HeadTurn_tableWidget->item(i, j)->text() << ", ";
-        }
-        out << "\n";
-    }
-
-    file.flush();
-    file.close();
 }
 
 void MainWindow::show_frame(Mat &image)
@@ -669,9 +644,48 @@ void MainWindow::on_pushButton_reset_clicked()
         ui->Yawn_ThresholdRate_spinBox->setValue(3);
 
         ui->RefreshRate_spinBox->setValue(10);
+    }
+}
 
-        Write_file("C://Users/Joseph/Desktop/Projects/DriverMonitor/asd.txt");
+void MainWindow::on_SaveOutputData_pushButton_clicked()
+{
+    QString FolderPath = ui->FolderPath_lineEdit->text();
+    QString FileName = ui->FileName_lineEdit->text();
+    int ExistingFileIndex = 0;
+    QString FilePath;
+    while(1)
+    {
+        FilePath.clear();
+        FilePath += FolderPath;
+        FilePath += FileName;
+        if(ExistingFileIndex != 0)
+            FilePath += QString::number(ExistingFileIndex);
+        FilePath += ".csv";
+        QFileInfo *check_file = new QFileInfo(FilePath);
+        if(!check_file->exists())
+            break;
+        ExistingFileIndex++;
+        cout << "File exists" << endl;
     }
 
+    QFile file(FilePath);
+    QTextStream out(&file);
 
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        cout << "could not open" << endl;
+        return;
+    }
+    for(int i = 0; i < ui->Main_tableWidget->rowCount(); i++)
+    {
+        if(ui->includeCount_checkBox->isChecked())
+            out << i + 1 << ", ";
+        for(int j = 0; j < ui->Main_tableWidget->columnCount(); j++)
+        {
+            out << ui->Main_tableWidget->item(i, j)->text() << ", ";
+        }
+        out << "\n";
+    }
+    file.flush();
+    file.close();
 }
