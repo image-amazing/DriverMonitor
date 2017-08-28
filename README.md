@@ -2,11 +2,11 @@
 
 Aims to identify whether the driver is drowsy or distracted away from the road.
 
-OpenCV version = 3.2.0
 
-Dlib version = 19.4
-
-Qt version = 5.6.2 for MinGW 4.9.2 32 bit
+Version:
+- OpenCV 3.2.0
+- Dlib 19.4
+- Qt 5.6.2 for MinGW 4.9.2 32 bit
 
 To test:
 - Change OpenCV and Dlib INCLUDEPATH and LIBS paths.
