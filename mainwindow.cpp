@@ -202,61 +202,18 @@ void MainWindow::update_window()
         FaceLeft.instance('h', FaceLeft_instanceTrigger, HeadTurn_timer, FaceLeft.percent, HeadTurnLeft_threshold);
         FaceLeft.classify('l', FaceLeft_instanceTrigger, HeadTurn_timer, HeadTurn_thresholdTime, FaceLeft_displayTrigger);
         FaceLeft.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceLeft_displayTrigger);
-
-        if(FaceLeft_displayTrigger == true)
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(FaceLeft.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(FaceLeft.string_status));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(FaceLeft.instance_time)));
-
-            ui->HeadTurn_tableWidget->insertRow(ui->HeadTurn_tableWidget->rowCount());
-            ui->HeadTurn_tableWidget->setItem(ui->HeadTurn_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(FaceLeft.time_string));
-            ui->HeadTurn_tableWidget->setItem(ui->HeadTurn_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(FaceLeft.string_status));
-            ui->HeadTurn_tableWidget->setItem(ui->HeadTurn_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(FaceLeft.instance_time)));
-            FaceLeft_displayTrigger = false;
-            HeadTurn_count++;
-        }
-
+        FaceLeft.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceLeft_displayTrigger, HeadTurn_count);
         FaceLeft.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count, main_string);
-
-        if(!FaceLeft.DriverStatus_string.isEmpty())
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(FaceLeft.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(FaceLeft.DriverStatus_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
-        }
+        FaceLeft.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
         FaceRight.head_parameters(FaceRight.facial_feature, FaceLeft.facial_feature);
         FaceRight.instance('h', FaceRight_instanceTrigger, HeadTurn_timer, FaceRight.percent, 65);
         FaceRight.classify('r', FaceRight_instanceTrigger, HeadTurn_timer, HeadTurn_thresholdTime, FaceRight_displayTrigger);
         FaceRight.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceRight_displayTrigger);
-
-        if(FaceRight_displayTrigger == true)
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(FaceRight.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(FaceRight.string_status));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(FaceRight.instance_time)));
-
-            ui->HeadTurn_tableWidget->insertRow(ui->HeadTurn_tableWidget->rowCount());
-            ui->HeadTurn_tableWidget->setItem(ui->HeadTurn_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(FaceRight.time_string));
-            ui->HeadTurn_tableWidget->setItem(ui->HeadTurn_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(FaceRight.string_status));
-            ui->HeadTurn_tableWidget->setItem(ui->HeadTurn_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(FaceRight.instance_time)));
-            FaceRight_displayTrigger = false;
-            HeadTurn_count++;
-        }
-
+        FaceRight.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceRight_displayTrigger, HeadTurn_count);
         FaceRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count, main_string);
+        FaceRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
-        if(!FaceRight.DriverStatus_string.isEmpty())
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(FaceRight.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(FaceRight.DriverStatus_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
-        }
 
         driver_monitor LeftEye(shape);
         LeftEye.measure(41, 37, 'y', 39, 36,'x', 100);
@@ -271,72 +228,20 @@ void MainWindow::update_window()
         Blink.classify('b', Blink_instanceTrigger, Blink_timer, Blink_thresholdTime, Blink_displayTrigger);
         Blink.instance_rate(Blink_rate, Blink_refreshRate, Blink_thresholdTime, Blink_displayTrigger);
         Blink.instance_rate(SlowBlink_rate, SlowBlink_refreshRate, SlowBlink_thresholdTime, Blink_displayTrigger);
-
-        if(Blink_displayTrigger == true)
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(Blink.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(Blink.string_status));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(Blink.instance_time)));
-
-            ui->Blink_tableWidget->insertRow(ui->Blink_tableWidget->rowCount());
-            ui->Blink_tableWidget->setItem(ui->Blink_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(Blink.time_string));
-            ui->Blink_tableWidget->setItem(ui->Blink_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(Blink.string_status));
-            ui->Blink_tableWidget->setItem(ui->Blink_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(Blink.instance_time)));
-            Blink_displayTrigger = false;
-            Blink_count++;
-        }
-
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Blink_tableWidget, Blink_displayTrigger, Blink_count);
         Blink.DriverStatus_Drowsy(ui->SlowBlink_ThresholdRate_spinBox->value(), SlowBlink_rate, main_string);
-
-        if(!Blink.DriverStatus_string.isEmpty())
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(Blink.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(Blink.DriverStatus_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
-        }
-
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
         Blink.DriverStatus_Asleep(ui->ClosedEyes_TimeLimit_spinBox->value(), Blink_timer, Blink_count, main_string);
-
-        if(!Blink.DriverStatus_string.isEmpty())
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(Blink.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(Blink.DriverStatus_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
-        }
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
         driver_monitor Mouth(shape);
         Mouth.measure(66, 62, 'y', 64, 60, 'x', 100);
         Mouth.instance('y', Yawn_instanceTrigger, Yawn_timer, Mouth.facial_feature, YawnMouth_threshold, LeftEye.percent, YawnEyes_threshold, RightEye.percent, YawnEyes_threshold);
         Mouth.classify('y', Yawn_instanceTrigger, Yawn_timer, Yawn_thresholdTime, Yawn_displayTrigger);
         Mouth.instance_rate(Yawn_rate, Yawn_refreshRate, Yawn_thresholdTime, Yawn_displayTrigger);
-
-        if(Yawn_displayTrigger == true)
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(Mouth.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(Mouth.string_status));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(Mouth.instance_time)));
-
-            ui->Yawn_tableWidget->insertRow(ui->Yawn_tableWidget->rowCount());
-            ui->Yawn_tableWidget->setItem(ui->Yawn_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(Mouth.time_string));
-            ui->Yawn_tableWidget->setItem(ui->Yawn_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(Mouth.string_status));
-            ui->Yawn_tableWidget->setItem(ui->Yawn_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(Mouth.instance_time)));
-            Yawn_displayTrigger = false;
-            Yawn_count++;
-        }
-
+        Mouth.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Yawn_tableWidget, Yawn_displayTrigger, Yawn_count);
         Mouth.DriverStatus_Drowsy(ui->Yawn_ThresholdRate_spinBox->value(), Yawn_rate, main_string);
-
-        if(!Mouth.DriverStatus_string.isEmpty())
-        {
-            ui->Main_tableWidget->insertRow(ui->Main_tableWidget->rowCount());
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(Mouth.time_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(Mouth.DriverStatus_string));
-            ui->Main_tableWidget->setItem(ui->Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
-        }
+        Mouth.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
         HeadTurn_PlotData.append(double(FaceLeft.percent));
         LeftEye_PlotData.append(LeftEye.percent);

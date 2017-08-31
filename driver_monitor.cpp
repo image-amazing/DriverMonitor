@@ -182,3 +182,33 @@ void driver_monitor::DriverStatus_Asleep(int threshold, QTime &instance_timer, i
         main_string += "\n";
     }
 }
+
+void driver_monitor::DisplayTo_QTableWidget(QTableWidget *Main_tableWidget, QTableWidget *Instance_tableWidget, bool &displayTrigger, int &count)
+{
+    if(displayTrigger == true)
+    {
+        Main_tableWidget->insertRow(Main_tableWidget->rowCount());
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(time_string));
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(string_status));
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(instance_time)));
+
+        Instance_tableWidget->insertRow(Instance_tableWidget->rowCount());
+        Instance_tableWidget->setItem(Instance_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(time_string));
+        Instance_tableWidget->setItem(Instance_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(string_status));
+        Instance_tableWidget->setItem(Instance_tableWidget->rowCount() - 1, 2, new QTableWidgetItem(QString::number(instance_time)));
+
+        displayTrigger = false;
+        count++;
+    }
+}
+
+void driver_monitor::DisplayTo_QTableWidget(QTableWidget *Main_tableWidget)
+{
+    if(!DriverStatus_string.isEmpty())
+    {
+        Main_tableWidget->insertRow(Main_tableWidget->rowCount());
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(time_string));
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(DriverStatus_string));
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
+    }
+}

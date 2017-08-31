@@ -6,6 +6,7 @@
 #include <QString>
 #include <QDateTime>
 #include <QTime>
+#include <QTableWidget>
 
 #include <iostream>
 
@@ -52,6 +53,9 @@ public:
     void DriverStatus_Distracted(int threshold, QTime &instance_timer, int instance_count, QString &main_string);
     void DriverStatus_Asleep(int threshold, QTime &instance_timer, int instance_count, QString &main_string);
     QString DriverStatus_string;
+
+    void DisplayTo_QTableWidget(QTableWidget *Main_tableWidget, QTableWidget *Instance_tableWidget, bool &displayTrigger, int &count);
+    void DisplayTo_QTableWidget(QTableWidget *Main_tableWidget);
 
 private:
     Mat image;
