@@ -10,6 +10,7 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QFileInfo>
+#include <QThread>
 
 namespace Ui {
 class MainWindow;
@@ -24,22 +25,32 @@ public:
     ~MainWindow();
 
     void show_frame(Mat &);
-    void face_layout(const dlib::full_object_detection&);
+    void face_layout(const dlib::full_object_detection&, Mat image);
     void ui_functions();
     void Write_file(QString FilePath);
 
+    void ProcessVideoFrame(Mat temp_frame, double VideoTime, QString VideoTime_string);
+    void ResetData();
+    void ResetSettings();
+
 private slots:
-    void on_pushButton_open_camera_clicked();
+    void ProcessCameraFrame();
 
-    void on_pushButton_close_camera_clicked();
+    void on_OpenCamera_pushButton_clicked();
 
-    void update_window();
+    void on_CloseCamera_pushButton_clicked();
 
     void on_pushButton_reset_clicked();
 
     void on_SaveOutputData_pushButton_clicked();
 
     void on_LoadVideo_pushButton_clicked();
+
+    void on_PlayVideo_pushButton_clicked();
+
+    void on_PauseVideo_pushButton_clicked();
+
+    void on_StopVideo_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -104,6 +115,21 @@ private:
     QVector<double> Mouth_PlotData;
 
     QVector<double> xAxis_PlotData;
+
+
+    bool CloseCamera = false;
+
+    unsigned int frameIndex;
+    double frameDelay;
+    double OptimalFrameDelay;
+    double EffectiveFrameDelay;
+    QTime ProcessDelayTimer;
+    bool PauseVideo = false;
+    bool StopVideo = false;
+
+    double HeadTurnStartTime;
+    double BlinkStartTime;
+    double YawnStartTime;
 };
 
 #endif // MAINWINDOW_H

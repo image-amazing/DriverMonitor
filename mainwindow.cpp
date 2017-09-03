@@ -14,6 +14,9 @@ int YawnEyes_threshold = 35;
 
 QString OutputData_path;
 
+QTime VideoTimer;
+std::vector<Mat> stored_frame;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -119,39 +122,34 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
-void MainWindow::on_pushButton_open_camera_clicked()
+void MainWindow::on_OpenCamera_pushButton_clicked()
 {
     cap.open(0);
-
     if(!cap.isOpened())
     {
-        cout << "camera is not open" << endl;
+        ui->statusBar->showMessage("Failed to open camera", 1000);
     }
     else
     {
-        cout << "camera is open" << endl;
+        ui->statusBar->showMessage("Camera is open", 1000);
 
-        connect(timer, SIGNAL(timeout()), this, SLOT(update_window()));
+        connect(timer, SIGNAL(timeout()), this, SLOT(ProcessCameraFrame()));
         timer->start(20);
-
-        ui->pushButton_close_camera->setEnabled(true);        
+        ui->CloseCamera_pushButton->setEnabled(true);
     }
-
     HeadTurn_timer.start();
     Blink_timer.start();
     Yawn_timer.start();
 }
 
-void MainWindow::on_pushButton_close_camera_clicked()
+void MainWindow::on_CloseCamera_pushButton_clicked()
 {
-    disconnect(timer, SIGNAL(timeout()), this, SLOT(update_window()));
+    disconnect(timer, SIGNAL(timeout()), this, SLOT(ProcessCameraFrame()));
     cap.release();
-
     Mat image = Mat::zeros(frame.size(), CV_8UC3);
     show_frame(image);
 
-    cout << "camera is closed" << endl;
+    ui->statusBar->showMessage("Camera is closed", 1000);
 
     FaceLeft_instanceTrigger = false;
     FaceRight_instanceTrigger = false;
@@ -164,15 +162,161 @@ void MainWindow::on_LoadVideo_pushButton_clicked()
     cap.open(ui->VideoInputPath_lineEdit->text().toStdString());
 
     if(!cap.isOpened())
-        cout << "video file is not loaded" << endl;
+        ui->statusBar->showMessage("Video file is not loaded", 1000);
     else
     {
-        connect(timer, SIGNAL(timeout()), this, SLOT(update_window()));
-        timer->start(20);
+        Mat temp_frame;        
+        stored_frame.clear();
+        while(!(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0 && cap.get(CV_CAP_PROP_POS_FRAMES) == cap.get(CV_CAP_PROP_FRAME_COUNT)))
+        {
+            cap >> temp_frame;
+
+            if(cap.get(CV_CAP_PROP_FRAME_WIDTH) > cap.get(CV_CAP_PROP_FRAME_HEIGHT))
+            {
+                double resize_height = 640 * (cap.get(CV_CAP_PROP_FRAME_HEIGHT) / cap.get(CV_CAP_PROP_FRAME_WIDTH));
+                cv::resize(temp_frame, temp_frame, Size(640, resize_height), 0, 0, INTER_CUBIC);
+            }
+            else
+            {
+                double resize_width = 480 * (cap.get(CV_CAP_PROP_FRAME_WIDTH) / cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+                cv::resize(temp_frame, temp_frame, Size(resize_width, 480), 0, 0, INTER_CUBIC);
+            }
+
+            Mat temp1_frame = temp_frame.clone();
+            stored_frame.push_back(temp1_frame);
+        }
+        ui->statusBar->showMessage("Finished loading video", 1000);
+        frameDelay = 1000 / cap.get(CV_CAP_PROP_FPS);
+        ui->OriginalFrameDelay_label->setText(QString::number(frameDelay));
+        OptimalFrameDelay = frameDelay;
+        frameIndex = 0;
     }
 }
 
-void MainWindow::update_window()
+void MainWindow::on_PlayVideo_pushButton_clicked()
+{
+    if(frameIndex == 0)
+        ResetData();
+    VideoTimer.start();
+    namedWindow("Delay Timer");
+
+    double VideoTime;
+
+    double VideoDuration;
+    VideoDuration = trunc(cap.get(CV_CAP_PROP_FRAME_COUNT) / cap.get(CV_CAP_PROP_FPS));
+
+    QString VideoDuration_minute;
+    if((VideoDuration / 60) < 10)
+    {
+        VideoDuration_minute += QString::number(0);
+        VideoDuration_minute += QString::number(trunc(VideoDuration / 60));
+    }
+    else
+    {
+        VideoDuration_minute += QString::number(trunc(VideoDuration / 60));
+    }
+    QString VideoDuration_second;
+    if((VideoDuration - trunc(VideoDuration / 60)) < 10)
+    {
+        VideoDuration_second += QString::number(0);
+        VideoDuration_second += QString::number(VideoDuration - trunc(VideoDuration / 60));
+    }
+    else
+    {
+        VideoDuration_second += QString::number(VideoDuration - trunc(VideoDuration / 60));
+    }
+    QString VideoDuration_string;
+    VideoDuration_string += VideoDuration_minute;
+    VideoDuration_string += ':';
+    VideoDuration_string += VideoDuration_second;
+
+    ui->VideoDuration_label->setText(VideoDuration_string);
+    ui->Video_horizontalSlider->setMaximum(stored_frame.size());
+    while(frameIndex < stored_frame.size())
+    {
+        if(PauseVideo == true || StopVideo == true)
+            break;
+
+        ProcessDelayTimer.start();
+        VideoTime = (frameIndex * cap.get(CV_CAP_PROP_FRAME_COUNT)) / (stored_frame.size() * cap.get(CV_CAP_PROP_FPS));
+
+        QString VideoTime_minute;
+        if((VideoTime / 60) < 10)
+        {
+            VideoTime_minute += QString::number(0);
+            VideoTime_minute += QString::number(trunc(VideoTime / 60));
+        }
+        else
+        {
+            VideoTime_minute += QString::number(trunc(VideoTime / 60));
+        }
+        QString VideoTime_second;
+        if((VideoTime - trunc(VideoTime / 60)) < 10)
+        {
+            VideoTime_second += QString::number(0);
+            VideoTime_second += QString::number(trunc(VideoTime) - trunc(VideoTime / 60));
+        }
+        else
+        {
+            VideoTime_second += QString::number(trunc(VideoTime) - trunc(VideoTime / 60));
+        }
+        QString VideoTime_string;
+        VideoTime_string += VideoTime_minute;
+        VideoTime_string += ':';
+        VideoTime_string += VideoTime_second;
+
+        ui->VideoTime_label->setText(VideoTime_string);
+
+        if(ui->ProcessVideo_checkBox->isChecked())
+        {
+            frame = stored_frame.at(frameIndex);
+            ProcessVideoFrame(frame, VideoTime, VideoTime_string);
+        }
+        else
+        {
+            show_frame(stored_frame.at(frameIndex));
+        }
+        ui->Video_horizontalSlider->setValue(frameIndex);
+
+        frameIndex++;
+
+        //cout << "Process Delay: " << ProcessDelayTimer.elapsed() << endl;
+        OptimalFrameDelay = frameDelay - ProcessDelayTimer.elapsed();
+        if(OptimalFrameDelay < 1)
+            OptimalFrameDelay = 1;
+        ui->EffectiveFrameDelay_label->setText(QString::number(OptimalFrameDelay));
+        cvWaitKey(OptimalFrameDelay);
+    }
+
+    destroyWindow("Delay Timer");
+    if(StopVideo == true)
+    {
+        StopVideo = false;
+        frameIndex = 0;
+        show_frame(stored_frame.at(frameIndex));
+        ui->Video_horizontalSlider->setValue(frameIndex);
+        QString VideoTime_string = "00:00";
+        ui->VideoTime_label->setText(VideoTime_string);
+        goto exit;
+    }
+    if(PauseVideo == true)
+    {
+        PauseVideo = false;
+        goto exit;
+    }
+
+    frameIndex++;
+    ui->Video_horizontalSlider->setValue(frameIndex);
+    ui->VideoTime_label->setText(VideoDuration_string);
+    frameIndex = 0;
+
+    exit:
+
+    cout << "Video Duration: " << cap.get(CV_CAP_PROP_FRAME_COUNT) / cap.get(CV_CAP_PROP_FPS) << endl;
+    cout << "Video Timer: " << VideoTimer.elapsed() << endl;
+}
+
+void MainWindow::ProcessCameraFrame()
 {
     cap >> frame;
 
@@ -190,29 +334,29 @@ void MainWindow::update_window()
         full_object_detection shape = shape_model(dlib_image, faces[i]);
         shapes.push_back(shape);
 
-        face_layout(shape);
+        face_layout(shape, frame);
 
-        driver_monitor FaceLeft(shape);
-        FaceLeft.measure(30, 36, 'x', 35, 31, 'x', 10);
+        driver_monitor HeadTurnLeft(shape);
+        HeadTurnLeft.measure(30, 36, 'x', 35, 31, 'x', 10);
 
-        driver_monitor FaceRight(shape);
-        FaceRight.measure(45, 30, 'x', 35, 31, 'x', 10);        
+        driver_monitor HeadTurnRight(shape);
+        HeadTurnRight.measure(45, 30, 'x', 35, 31, 'x', 10);
 
-        FaceLeft.head_parameters(FaceLeft.facial_feature, FaceRight.facial_feature);
-        FaceLeft.instance('h', FaceLeft_instanceTrigger, HeadTurn_timer, FaceLeft.percent, HeadTurnLeft_threshold);
-        FaceLeft.classify('l', FaceLeft_instanceTrigger, HeadTurn_timer, HeadTurn_thresholdTime, FaceLeft_displayTrigger);
-        FaceLeft.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceLeft_displayTrigger);
-        FaceLeft.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceLeft_displayTrigger, HeadTurn_count);
-        FaceLeft.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count, main_string);
-        FaceLeft.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        HeadTurnLeft.head_parameters(HeadTurnLeft.facial_feature, HeadTurnRight.facial_feature);
+        HeadTurnLeft.instance('h', FaceLeft_instanceTrigger, HeadTurn_timer, HeadTurnLeft.percent, HeadTurnLeft_threshold);
+        HeadTurnLeft.classify('l', FaceLeft_instanceTrigger, HeadTurn_timer, HeadTurn_thresholdTime, FaceLeft_displayTrigger);
+        HeadTurnLeft.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceLeft_displayTrigger);
+        HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceLeft_displayTrigger, HeadTurn_count);
+        HeadTurnLeft.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
+        HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
-        FaceRight.head_parameters(FaceRight.facial_feature, FaceLeft.facial_feature);
-        FaceRight.instance('h', FaceRight_instanceTrigger, HeadTurn_timer, FaceRight.percent, 65);
-        FaceRight.classify('r', FaceRight_instanceTrigger, HeadTurn_timer, HeadTurn_thresholdTime, FaceRight_displayTrigger);
-        FaceRight.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceRight_displayTrigger);
-        FaceRight.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceRight_displayTrigger, HeadTurn_count);
-        FaceRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count, main_string);
-        FaceRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        HeadTurnRight.head_parameters(HeadTurnRight.facial_feature, HeadTurnLeft.facial_feature);
+        HeadTurnRight.instance('h', FaceRight_instanceTrigger, HeadTurn_timer, HeadTurnRight.percent, 65);
+        HeadTurnRight.classify('r', FaceRight_instanceTrigger, HeadTurn_timer, HeadTurn_thresholdTime, FaceRight_displayTrigger);
+        HeadTurnRight.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceRight_displayTrigger);
+        HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceRight_displayTrigger, HeadTurn_count);
+        HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
+        HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
 
         driver_monitor LeftEye(shape);
@@ -229,24 +373,135 @@ void MainWindow::update_window()
         Blink.instance_rate(Blink_rate, Blink_refreshRate, Blink_thresholdTime, Blink_displayTrigger);
         Blink.instance_rate(SlowBlink_rate, SlowBlink_refreshRate, SlowBlink_thresholdTime, Blink_displayTrigger);
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Blink_tableWidget, Blink_displayTrigger, Blink_count);
-        Blink.DriverStatus_Drowsy(ui->SlowBlink_ThresholdRate_spinBox->value(), SlowBlink_rate, main_string);
+        Blink.DriverStatus_Drowsy(ui->SlowBlink_ThresholdRate_spinBox->value(), SlowBlink_rate);
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
-        Blink.DriverStatus_Asleep(ui->ClosedEyes_TimeLimit_spinBox->value(), Blink_timer, Blink_count, main_string);
+        Blink.DriverStatus_Asleep(ui->ClosedEyes_TimeLimit_spinBox->value(), Blink_timer, Blink_count);
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
-        driver_monitor Mouth(shape);
-        Mouth.measure(66, 62, 'y', 64, 60, 'x', 100);
-        Mouth.instance('y', Yawn_instanceTrigger, Yawn_timer, Mouth.facial_feature, YawnMouth_threshold, LeftEye.percent, YawnEyes_threshold, RightEye.percent, YawnEyes_threshold);
-        Mouth.classify('y', Yawn_instanceTrigger, Yawn_timer, Yawn_thresholdTime, Yawn_displayTrigger);
-        Mouth.instance_rate(Yawn_rate, Yawn_refreshRate, Yawn_thresholdTime, Yawn_displayTrigger);
-        Mouth.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Yawn_tableWidget, Yawn_displayTrigger, Yawn_count);
-        Mouth.DriverStatus_Drowsy(ui->Yawn_ThresholdRate_spinBox->value(), Yawn_rate, main_string);
-        Mouth.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        driver_monitor Yawn(shape);
+        Yawn.measure(66, 62, 'y', 64, 60, 'x', 100);
+        Yawn.instance('y', Yawn_instanceTrigger, Yawn_timer, Yawn.facial_feature, YawnMouth_threshold, LeftEye.percent, YawnEyes_threshold, RightEye.percent, YawnEyes_threshold);
+        Yawn.classify('y', Yawn_instanceTrigger, Yawn_timer, Yawn_thresholdTime, Yawn_displayTrigger);
+        Yawn.instance_rate(Yawn_rate, Yawn_refreshRate, Yawn_thresholdTime, Yawn_displayTrigger);
+        Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Yawn_tableWidget, Yawn_displayTrigger, Yawn_count);
+        Yawn.DriverStatus_Drowsy(ui->Yawn_ThresholdRate_spinBox->value(), Yawn_rate);
+        Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
-        HeadTurn_PlotData.append(double(FaceLeft.percent));
+        HeadTurn_PlotData.append(double(HeadTurnLeft.percent));
         LeftEye_PlotData.append(LeftEye.percent);
         RightEye_PlotData.append(RightEye.percent);
-        Mouth_PlotData.append(Mouth.facial_feature);
+        Mouth_PlotData.append(Yawn.facial_feature);
+        xAxis_PlotData.append(double(HeadTurn_PlotData.size()));
+
+        ui_functions();
+    }
+    show_frame(frame);
+}
+
+void MainWindow::ProcessVideoFrame(Mat temp_frame, double VideoTime, QString VideoTime_string)
+{
+
+    frame = temp_frame.clone();
+    VideoTime = trunc(VideoTime * 1000);
+
+
+
+//    double CurrentVideoTime
+//    cout << cap.get(CV_CAP_PROP_FRAME_COUNT) / cap.get(CV_CAP_PROP_FPS)
+//         << ' '
+//         << cap.get(CV_CAP_PROP_POS_MSEC) / 1000
+//         << endl;
+
+//    if(cap.get(CV_CAP_PROP_FRAME_WIDTH) > cap.get(CV_CAP_PROP_FRAME_HEIGHT))
+//    {
+//        double resize_height = 640 * (cap.get(CV_CAP_PROP_FRAME_HEIGHT) / cap.get(CV_CAP_PROP_FRAME_WIDTH));
+//        cv::resize(frame, frame, Size(640, resize_height), 0, 0, INTER_CUBIC);
+//    }
+//    else
+//    {
+//        double resize_width = 480 * (cap.get(CV_CAP_PROP_FRAME_WIDTH) / cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+//        cv::resize(frame, frame, Size(resize_width, 480), 0, 0, INTER_CUBIC);
+//    }
+
+//    if(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0 && cap.get(CV_CAP_PROP_POS_FRAMES) == cap.get(CV_CAP_PROP_FRAME_COUNT))
+//    {
+//        cout << VideoTimer.elapsed() << endl;
+//        cap.release();
+//        disconnect(timer, SIGNAL(timeout()), this, SLOT(update_window()));
+//        timer->start(20);
+//    }
+
+    array2d<bgr_pixel> dlib_image;
+    assign_image(dlib_image, cv_image<bgr_pixel>(frame));
+
+    std::vector<dlib::rectangle> faces = detector(dlib_image);
+
+    //int number_of_detected_faces = faces.size();
+    //cout << "Number of detected faces : " << number_of_detected_faces << endl;
+
+    std::vector<full_object_detection> shapes;
+    for(unsigned long i = 0; i < faces.size(); i++)
+    {
+        full_object_detection shape = shape_model(dlib_image, faces[i]);
+        shapes.push_back(shape);
+
+        face_layout(shape, frame);
+
+        driver_monitor HeadTurnLeft(shape);
+        HeadTurnLeft.measure(30, 36, 'x', 35, 31, 'x', 10);
+
+        driver_monitor HeadTurnRight(shape);
+        HeadTurnRight.measure(45, 30, 'x', 35, 31, 'x', 10);
+
+        HeadTurnLeft.head_parameters(HeadTurnLeft.facial_feature, HeadTurnRight.facial_feature);
+        HeadTurnLeft.instance('h', FaceLeft_instanceTrigger, VideoTime, HeadTurnStartTime, HeadTurnLeft.percent, HeadTurnLeft_threshold);
+        HeadTurnLeft.classify('l', FaceLeft_instanceTrigger, VideoTime, HeadTurnStartTime, HeadTurn_thresholdTime, FaceLeft_displayTrigger);
+        HeadTurnLeft.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceLeft_displayTrigger, VideoTime);
+        HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceLeft_displayTrigger, HeadTurn_count, VideoTime_string);
+        HeadTurnLeft.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), VideoTime, HeadTurnStartTime, HeadTurn_count);
+        HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget);
+
+        HeadTurnRight.head_parameters(HeadTurnRight.facial_feature, HeadTurnLeft.facial_feature);
+        HeadTurnRight.instance('h', FaceRight_instanceTrigger, VideoTime, HeadTurnStartTime, HeadTurnRight.percent, 65);
+        HeadTurnRight.classify('r', FaceRight_instanceTrigger, VideoTime, HeadTurnStartTime, HeadTurn_thresholdTime, FaceRight_displayTrigger);
+        HeadTurnRight.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceRight_displayTrigger, VideoTime);
+        HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceRight_displayTrigger, HeadTurn_count, VideoTime_string);
+        HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), VideoTime, HeadTurnStartTime, HeadTurn_count);
+        HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
+
+
+        driver_monitor LeftEye(shape);
+        LeftEye.measure(41, 37, 'y', 39, 36,'x', 100);
+        LeftEye.eye_parameters(LeftEye_max, LeftEye_min);
+
+        driver_monitor RightEye(shape);
+        RightEye.measure(46, 44, 'y', 45, 42, 'x', 100);
+        RightEye.eye_parameters(RightEye_max, RightEye_min);
+
+        driver_monitor Blink(shape);
+        Blink.instance('b', Blink_instanceTrigger, VideoTime, BlinkStartTime, LeftEye.percent, Blink_threshold, RightEye.percent, Blink_threshold);
+        Blink.classify('b', Blink_instanceTrigger, VideoTime, BlinkStartTime, Blink_thresholdTime, Blink_displayTrigger);
+        Blink.instance_rate(Blink_rate, Blink_refreshRate, Blink_thresholdTime, Blink_displayTrigger, VideoTime);
+        Blink.instance_rate(SlowBlink_rate, SlowBlink_refreshRate, SlowBlink_thresholdTime, Blink_displayTrigger, VideoTime);
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Blink_tableWidget, Blink_displayTrigger, Blink_count, VideoTime_string);
+        Blink.DriverStatus_Drowsy(ui->SlowBlink_ThresholdRate_spinBox->value(), SlowBlink_rate);
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        Blink.DriverStatus_Asleep(ui->ClosedEyes_TimeLimit_spinBox->value(), VideoTime, BlinkStartTime, Blink_count);
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
+
+        driver_monitor Yawn(shape);
+        Yawn.measure(66, 62, 'y', 64, 60, 'x', 100);
+        Yawn.instance('y', Yawn_instanceTrigger, VideoTime, YawnStartTime, Yawn.facial_feature, YawnMouth_threshold, LeftEye.percent, YawnEyes_threshold, RightEye.percent, YawnEyes_threshold);
+        Yawn.classify('y', Yawn_instanceTrigger, VideoTime, YawnStartTime, Yawn_thresholdTime, Yawn_displayTrigger);
+        Yawn.instance_rate(Yawn_rate, Yawn_refreshRate, Yawn_thresholdTime, Yawn_displayTrigger, VideoTime);
+        Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Yawn_tableWidget, Yawn_displayTrigger, Yawn_count);
+        Yawn.DriverStatus_Drowsy(ui->Yawn_ThresholdRate_spinBox->value(), Yawn_rate);
+        Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget);
+
+        HeadTurn_PlotData.append(double(HeadTurnLeft.percent));
+        LeftEye_PlotData.append(LeftEye.percent);
+        RightEye_PlotData.append(RightEye.percent);
+        Mouth_PlotData.append(Yawn.facial_feature);
         xAxis_PlotData.append(double(HeadTurn_PlotData.size()));
 
         ui_functions();
@@ -471,7 +726,7 @@ void MainWindow::show_frame(Mat &image)
     ui->label_camera->setPixmap(QPixmap::fromImage(qt_image));
 }
 
-void MainWindow::face_layout(const dlib::full_object_detection& shape)
+void MainWindow::face_layout(const dlib::full_object_detection& shape, Mat image)
 {
     std::vector<cv::Point> points;
     int start_point[] = {0, 17, 22, 27, 30, 36, 42, 48, 60};
@@ -488,8 +743,51 @@ void MainWindow::face_layout(const dlib::full_object_detection& shape)
             isClosed = false;
         else
             isClosed = true;
-        cv::polylines(frame, points, isClosed, cv::Scalar(blue, green, red), 1, 16);
+        cv::polylines(image, points, isClosed, cv::Scalar(blue, green, red), 1, 16);
         points.clear();
+    }
+}
+
+void MainWindow::ResetData()
+{
+    FaceLeft_instanceTrigger = false;
+    FaceRight_instanceTrigger = false;
+    Blink_instanceTrigger = false;
+    Yawn_instanceTrigger = false;
+
+    HeadTurn_count = 0;
+    Blink_count = 0;
+    Yawn_count = 0;
+
+    HeadTurn_rate.clear();
+    Blink_rate.clear();
+    SlowBlink_rate.clear();
+    Yawn_rate.clear();
+
+    HeadTurn_PlotData.clear();
+    LeftEye_PlotData.clear();
+    RightEye_PlotData.clear();
+    Mouth_PlotData.clear();
+    xAxis_PlotData.clear();
+
+    for(int i = ui->Main_tableWidget->rowCount(); i >= 0; --i)
+    {
+        ui->Main_tableWidget->removeRow(i);
+    }
+
+    for(int i = ui->HeadTurn_tableWidget->rowCount(); i >= 0; --i)
+    {
+        ui->HeadTurn_tableWidget->removeRow(i);
+    }
+
+    for(int i = ui->Blink_tableWidget->rowCount(); i >= 0; --i)
+    {
+        ui->Blink_tableWidget->removeRow(i);
+    }
+
+    for(int i = ui->Yawn_tableWidget->rowCount(); i >= 0; --i)
+    {
+        ui->Yawn_tableWidget->removeRow(i);
     }
 }
 
@@ -497,50 +795,7 @@ void MainWindow::on_pushButton_reset_clicked()
 {
     if(ui->ResetData_checkBox->isChecked() == true)
     {
-        FaceLeft_instanceTrigger = false;
-        FaceRight_instanceTrigger = false;
-        Blink_instanceTrigger = false;
-        Yawn_instanceTrigger = false;
-
-        HeadTurn_count = 0;
-        Blink_count = 0;
-        Yawn_count = 0;
-
-        main_string.clear();
-        HeadTurn_string.clear();
-        Blink_string.clear();
-        Yawn_string.clear();
-
-        HeadTurn_rate.clear();
-        Blink_rate.clear();
-        SlowBlink_rate.clear();
-        Yawn_rate.clear();
-
-        HeadTurn_PlotData.clear();
-        LeftEye_PlotData.clear();
-        RightEye_PlotData.clear();
-        Mouth_PlotData.clear();
-        xAxis_PlotData.clear();
-
-        for(int i = ui->Main_tableWidget->rowCount(); i >= 0; --i)
-        {
-            ui->Main_tableWidget->removeRow(i);
-        }
-
-        for(int i = ui->HeadTurn_tableWidget->rowCount(); i >= 0; --i)
-        {
-            ui->HeadTurn_tableWidget->removeRow(i);
-        }
-
-        for(int i = ui->Blink_tableWidget->rowCount(); i >= 0; --i)
-        {
-            ui->Blink_tableWidget->removeRow(i);
-        }
-
-        for(int i = ui->Yawn_tableWidget->rowCount(); i >= 0; --i)
-        {
-            ui->Yawn_tableWidget->removeRow(i);
-        }
+        ResetData();
     }
 
     if(ui->ResetSettings_checkBox->isChecked() == true)
@@ -614,3 +869,13 @@ void MainWindow::on_SaveOutputData_pushButton_clicked()
 }
 
 
+
+void MainWindow::on_PauseVideo_pushButton_clicked()
+{
+    PauseVideo = true;
+}
+
+void MainWindow::on_StopVideo_pushButton_clicked()
+{
+    StopVideo = true;
+}
