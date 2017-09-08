@@ -115,6 +115,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     detector = get_frontal_face_detector();
     deserialize("C://shape_predictor_68_face_landmarks.dat") >> shape_model;
+//    deserialize("shape_predictor_68_face_landmarks.dat") >> shape_model;
 }
 
 MainWindow::~MainWindow()
@@ -167,7 +168,7 @@ void MainWindow::on_LoadVideo_pushButton_clicked()
     {
         Mat temp_frame;        
         stored_frame.clear();
-        while(!(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0 && cap.get(CV_CAP_PROP_POS_FRAMES) == cap.get(CV_CAP_PROP_FRAME_COUNT)))
+        while(!(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0 && cap.get(CV_CAP_PROP_POS_FRAMES) == cap.get(CV_CAP_PROP_FRAME_COUNT) - 1))
         {
             cap >> temp_frame;
 
@@ -182,8 +183,13 @@ void MainWindow::on_LoadVideo_pushButton_clicked()
                 cv::resize(temp_frame, temp_frame, Size(resize_width, 480), 0, 0, INTER_CUBIC);
             }
 
-            Mat temp1_frame = temp_frame.clone();
-            stored_frame.push_back(temp1_frame);
+            //Mat temp1_frame = temp_frame.clone();
+            stored_frame.push_back(temp_frame);
+            double LoadingPercent = (cap.get(CV_CAP_PROP_POS_FRAMES) / cap.get(CV_CAP_PROP_FRAME_COUNT)) * 100;
+            QString LoadingPercent_string = QString::number(LoadingPercent);
+            LoadingPercent_string += "%";
+            ui->statusBar->showMessage(LoadingPercent_string, 1000);
+
         }
         ui->statusBar->showMessage("Finished loading video", 1000);
         frameDelay = 1000 / cap.get(CV_CAP_PROP_FPS);
@@ -195,10 +201,11 @@ void MainWindow::on_LoadVideo_pushButton_clicked()
 
 void MainWindow::on_PlayVideo_pushButton_clicked()
 {
-    if(frameIndex == 0)
+    if(frameIndex == 0 && ui->ProcessVideo_checkBox->isChecked())
         ResetData();
     VideoTimer.start();
     namedWindow("Delay Timer");
+    moveWindow("Delay Timer", 0, 0);
 
     double VideoTime;
 
@@ -216,14 +223,14 @@ void MainWindow::on_PlayVideo_pushButton_clicked()
         VideoDuration_minute += QString::number(trunc(VideoDuration / 60));
     }
     QString VideoDuration_second;
-    if((VideoDuration - trunc(VideoDuration / 60)) < 10)
+    if((VideoDuration - (VideoDuration / 60)) < 10)
     {
         VideoDuration_second += QString::number(0);
-        VideoDuration_second += QString::number(VideoDuration - trunc(VideoDuration / 60));
+        VideoDuration_second += QString::number(VideoDuration - trunc(VideoDuration / 60) * 60);
     }
     else
     {
-        VideoDuration_second += QString::number(VideoDuration - trunc(VideoDuration / 60));
+        VideoDuration_second += QString::number(VideoDuration - trunc(VideoDuration / 60) * 60);
     }
     QString VideoDuration_string;
     VideoDuration_string += VideoDuration_minute;
@@ -404,25 +411,6 @@ void MainWindow::ProcessVideoFrame(Mat temp_frame, double VideoTime, QString Vid
     frame = temp_frame.clone();
     VideoTime = trunc(VideoTime * 1000);
 
-
-
-//    double CurrentVideoTime
-//    cout << cap.get(CV_CAP_PROP_FRAME_COUNT) / cap.get(CV_CAP_PROP_FPS)
-//         << ' '
-//         << cap.get(CV_CAP_PROP_POS_MSEC) / 1000
-//         << endl;
-
-//    if(cap.get(CV_CAP_PROP_FRAME_WIDTH) > cap.get(CV_CAP_PROP_FRAME_HEIGHT))
-//    {
-//        double resize_height = 640 * (cap.get(CV_CAP_PROP_FRAME_HEIGHT) / cap.get(CV_CAP_PROP_FRAME_WIDTH));
-//        cv::resize(frame, frame, Size(640, resize_height), 0, 0, INTER_CUBIC);
-//    }
-//    else
-//    {
-//        double resize_width = 480 * (cap.get(CV_CAP_PROP_FRAME_WIDTH) / cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-//        cv::resize(frame, frame, Size(resize_width, 480), 0, 0, INTER_CUBIC);
-//    }
-
 //    if(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0 && cap.get(CV_CAP_PROP_POS_FRAMES) == cap.get(CV_CAP_PROP_FRAME_COUNT))
 //    {
 //        cout << VideoTimer.elapsed() << endl;
@@ -459,7 +447,7 @@ void MainWindow::ProcessVideoFrame(Mat temp_frame, double VideoTime, QString Vid
         HeadTurnLeft.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceLeft_displayTrigger, VideoTime);
         HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceLeft_displayTrigger, HeadTurn_count, VideoTime_string);
         HeadTurnLeft.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), VideoTime, HeadTurnStartTime, HeadTurn_count);
-        HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
 
         HeadTurnRight.head_parameters(HeadTurnRight.facial_feature, HeadTurnLeft.facial_feature);
         HeadTurnRight.instance('h', FaceRight_instanceTrigger, VideoTime, HeadTurnStartTime, HeadTurnRight.percent, 65);
@@ -467,7 +455,7 @@ void MainWindow::ProcessVideoFrame(Mat temp_frame, double VideoTime, QString Vid
         HeadTurnRight.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, FaceRight_displayTrigger, VideoTime);
         HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, FaceRight_displayTrigger, HeadTurn_count, VideoTime_string);
         HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), VideoTime, HeadTurnStartTime, HeadTurn_count);
-        HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
 
 
         driver_monitor LeftEye(shape);
@@ -485,18 +473,18 @@ void MainWindow::ProcessVideoFrame(Mat temp_frame, double VideoTime, QString Vid
         Blink.instance_rate(SlowBlink_rate, SlowBlink_refreshRate, SlowBlink_thresholdTime, Blink_displayTrigger, VideoTime);
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Blink_tableWidget, Blink_displayTrigger, Blink_count, VideoTime_string);
         Blink.DriverStatus_Drowsy(ui->SlowBlink_ThresholdRate_spinBox->value(), SlowBlink_rate);
-        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
         Blink.DriverStatus_Asleep(ui->ClosedEyes_TimeLimit_spinBox->value(), VideoTime, BlinkStartTime, Blink_count);
-        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
 
         driver_monitor Yawn(shape);
         Yawn.measure(66, 62, 'y', 64, 60, 'x', 100);
         Yawn.instance('y', Yawn_instanceTrigger, VideoTime, YawnStartTime, Yawn.facial_feature, YawnMouth_threshold, LeftEye.percent, YawnEyes_threshold, RightEye.percent, YawnEyes_threshold);
         Yawn.classify('y', Yawn_instanceTrigger, VideoTime, YawnStartTime, Yawn_thresholdTime, Yawn_displayTrigger);
         Yawn.instance_rate(Yawn_rate, Yawn_refreshRate, Yawn_thresholdTime, Yawn_displayTrigger, VideoTime);
-        Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Yawn_tableWidget, Yawn_displayTrigger, Yawn_count);
+        Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Yawn_tableWidget, Yawn_displayTrigger, Yawn_count, VideoTime_string);
         Yawn.DriverStatus_Drowsy(ui->Yawn_ThresholdRate_spinBox->value(), Yawn_rate);
-        Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
 
         HeadTurn_PlotData.append(double(HeadTurnLeft.percent));
         LeftEye_PlotData.append(LeftEye.percent);

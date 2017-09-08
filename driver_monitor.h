@@ -63,6 +63,8 @@ public:
     void DisplayTo_QTableWidget(QTableWidget *Main_tableWidget, QTableWidget *Instance_tableWidget, bool &displayTrigger, int &count);
     void DisplayTo_QTableWidget(QTableWidget *Main_tableWidget, QTableWidget *Instance_tableWidget, bool &displayTrigger, int &count, QString VideoTime_string);
     void DisplayTo_QTableWidget(QTableWidget *Main_tableWidget);
+    void DisplayTo_QTableWidget(QTableWidget *Main_tableWidget, QString VideoTime_string);
+
 
 private:
     Mat image;

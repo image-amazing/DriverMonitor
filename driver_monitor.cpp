@@ -111,7 +111,6 @@ void driver_monitor::instance(char inst, bool &instance_trigger, double CurrentV
         }
         else
         {
-            StartTime = 0;
             status = 0;
         }
         break;
@@ -125,9 +124,9 @@ void driver_monitor::instance(char inst, bool &instance_trigger, double CurrentV
         }
         else
         {
-            StartTime = 0;
             status = 0;
         }
+        cout << StartTime << endl;
         break;
     }
 }
@@ -315,6 +314,17 @@ void driver_monitor::DisplayTo_QTableWidget(QTableWidget *Main_tableWidget)
     {
         Main_tableWidget->insertRow(Main_tableWidget->rowCount());
         Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(time_string));
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(DriverStatus_string));
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
+    }
+}
+
+void driver_monitor::DisplayTo_QTableWidget(QTableWidget *Main_tableWidget, QString VideoTime_string)
+{
+    if(!DriverStatus_string.isEmpty())
+    {
+        Main_tableWidget->insertRow(Main_tableWidget->rowCount());
+        Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(VideoTime_string));
         Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(DriverStatus_string));
         Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
     }

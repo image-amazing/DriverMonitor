@@ -103,7 +103,7 @@
         <item>
          <widget class="QCheckBox" name="ProcessVideo_checkBox">
           <property name="text">
-           <string>Process Video</string>
+           <string>Process Video (data will be cleared on play)</string>
           </property>
           <property name="checked">
            <bool>true</bool>
