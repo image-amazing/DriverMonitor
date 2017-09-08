@@ -126,7 +126,6 @@ void driver_monitor::instance(char inst, bool &instance_trigger, double CurrentV
         {
             status = 0;
         }
-        cout << StartTime << endl;
         break;
     }
 }

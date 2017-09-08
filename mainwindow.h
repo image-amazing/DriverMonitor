@@ -29,12 +29,16 @@ public:
     void ui_functions();
     void Write_file(QString FilePath);
 
-    void ProcessVideoFrame(Mat temp_frame, double VideoTime, QString VideoTime_string);
+
     void ResetData();
     void ResetSettings();
 
 private slots:
+    void DisplayCurrentTime();
+
     void ProcessCameraFrame();
+
+    void ProcessVideoFrame();
 
     void on_OpenCamera_pushButton_clicked();
 
@@ -51,6 +55,8 @@ private slots:
     void on_PauseVideo_pushButton_clicked();
 
     void on_StopVideo_pushButton_clicked();
+
+    void on_Video_horizontalSlider_sliderMoved(int position);
 
 private:
     Ui::MainWindow *ui;
@@ -126,6 +132,7 @@ private:
     QTime ProcessDelayTimer;
     bool PauseVideo = false;
     bool StopVideo = false;
+    double PauseTime;
 
     double HeadTurnStartTime;
     double BlinkStartTime;
