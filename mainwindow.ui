@@ -114,27 +114,7 @@
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="2">
-         <widget class="QLabel" name="OriginalFrameDelay_label">
-          <property name="autoFillBackground">
-           <bool>true</bool>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::Box</enum>
-          </property>
-          <property name="text">
-           <string>0</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="label_28">
-          <property name="text">
-           <string>Original Video Frame Delay(ms):</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
+        <item row="1" column="1">
          <spacer name="horizontalSpacer_3">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -147,7 +127,34 @@
           </property>
          </spacer>
         </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_28">
+          <property name="text">
+           <string>Original Video Frame Delay(ms):</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLabel" name="OriginalFrameDelay_label">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::Box</enum>
+          </property>
+          <property name="text">
+           <string>0</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="2">
+         <widget class="QLabel" name="label_27">
+          <property name="text">
+           <string>Effective Video Frame Delay(ms):</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
          <widget class="QLabel" name="EffectiveFrameDelay_label">
           <property name="autoFillBackground">
            <bool>true</bool>
@@ -160,10 +167,10 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLabel" name="label_27">
+        <item row="1" column="0">
+         <widget class="QPushButton" name="Rotate_pushButton">
           <property name="text">
-           <string>Effective Video Frame Delay(ms):</string>
+           <string>Rotate</string>
           </property>
          </widget>
         </item>
@@ -245,7 +252,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -414,6 +421,12 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
            <spacer name="verticalSpacer_4">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
             </property>
            </spacer>
           </item>

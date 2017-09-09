@@ -31,8 +31,10 @@ public:
     void ui_functions();
     void Write_file(QString FilePath);
 
+    void RotateImage();
     void ResetData();
     void ResetSettings();
+    void ResetTriggers();
 
 private slots:
     void DisplayCurrentTime();
@@ -63,6 +65,8 @@ private slots:
 
     void on_SaveSettings_pushButton_clicked();
 
+    void on_Rotate_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -78,8 +82,8 @@ private:
     int LeftEye_max, LeftEye_min = 100;
     int RightEye_max, RightEye_min = 100;
 
-    bool FaceLeft_instanceTrigger = false;
-    bool FaceRight_instanceTrigger = false;
+    bool HeadTurnLeft_instanceTrigger = false;
+    bool HeadTurnRight_instanceTrigger = false;
     bool Blink_instanceTrigger= false;
     bool Yawn_instanceTrigger = false;
 
@@ -93,6 +97,12 @@ private:
     int SlowBlink_thresholdTime = 200;
     int Yawn_thresholdTime = 200;
 
+    int HeadTurnLeft_thresholdLevel;
+    int HeadTurnRight_thresholdLevel;
+    int Blink_thresholdLevel;
+    int YawnEyes_thresholdLevel;
+    int YawnMouth_thresholdLevel;
+
     QString main_string = "Start: \n";
     QString HeadTurn_string = "Start: \n";
     QString Blink_string = "Start: \n";
@@ -102,8 +112,8 @@ private:
     QTime Blink_timer;
     QTime Yawn_timer;
 
-    bool FaceLeft_displayTrigger = false;
-    bool FaceRight_displayTrigger = false;
+    bool HeadTurnLeft_displayTrigger = false;
+    bool HeadTurnRight_displayTrigger = false;
     bool Blink_displayTrigger = false;
     bool Yawn_displayTrigger = false;
 
@@ -142,6 +152,8 @@ private:
     double HeadTurnStartTime;
     double BlinkStartTime;
     double YawnStartTime;
+
+    int Rotate = 0;
 };
 
 #endif // MAINWINDOW_H
