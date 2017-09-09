@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <driver_monitor.h>
+#include <iostream>
+#include <fstream>
 
 #include <QMainWindow>
 #include <QTimer>
@@ -28,7 +30,6 @@ public:
     void face_layout(const dlib::full_object_detection&, Mat image);
     void ui_functions();
     void Write_file(QString FilePath);
-
 
     void ResetData();
     void ResetSettings();
@@ -57,6 +58,10 @@ private slots:
     void on_StopVideo_pushButton_clicked();
 
     void on_Video_horizontalSlider_sliderMoved(int position);
+
+    void on_LoadSettings_pushButton_clicked();
+
+    void on_SaveSettings_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;

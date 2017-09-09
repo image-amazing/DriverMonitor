@@ -254,6 +254,72 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <layout class="QGridLayout" name="gridLayout">
+          <item row="15" column="0">
+           <widget class="QLabel" name="label_26">
+            <property name="text">
+             <string>Settings Folder Path:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="16" column="0">
+           <widget class="QLabel" name="label_29">
+            <property name="text">
+             <string>File Name:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="16" column="1">
+           <widget class="QLineEdit" name="FileNameSettings_lineEdit">
+            <property name="text">
+             <string>DriverMonitorSettings</string>
+            </property>
+           </widget>
+          </item>
+          <item row="15" column="1">
+           <widget class="QLineEdit" name="FolderPathSettings_lineEdit">
+            <property name="text">
+             <string>C:\Users\Joseph\Desktop\</string>
+            </property>
+           </widget>
+          </item>
+          <item row="18" column="1">
+           <spacer name="verticalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="17" column="1">
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QPushButton" name="LoadSettings_pushButton">
+              <property name="text">
+               <string>Load</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="SaveSettings_pushButton">
+              <property name="text">
+               <string>Save</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="OpenCamera_pushButton">
+            <property name="text">
+             <string>Open Camera</string>
+            </property>
+           </widget>
+          </item>
           <item row="0" column="0">
            <widget class="QLabel" name="label_25">
             <property name="text">
@@ -261,10 +327,24 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="OpenCamera_pushButton">
+          <item row="5" column="1">
+           <widget class="QPushButton" name="LoadVideo_pushButton">
             <property name="text">
-             <string>Open Camera</string>
+             <string>Load File</string>
+            </property>
+           </widget>
+          </item>
+          <item row="20" column="1">
+           <widget class="QCheckBox" name="ResetSettings_checkBox">
+            <property name="text">
+             <string>Settings</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_23">
+            <property name="text">
+             <string>File Path:</string>
             </property>
            </widget>
           </item>
@@ -281,24 +361,10 @@
             </property>
            </spacer>
           </item>
-          <item row="16" column="1">
-           <widget class="QCheckBox" name="ResetSettings_checkBox">
+          <item row="8" column="1">
+           <widget class="QLineEdit" name="FileNameOutput_lineEdit">
             <property name="text">
-             <string>Settings</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QPushButton" name="LoadVideo_pushButton">
-            <property name="text">
-             <string>Load File</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_23">
-            <property name="text">
-             <string>File Path:</string>
+             <string>OutputData</string>
             </property>
            </widget>
           </item>
@@ -320,24 +386,10 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
             </property>
            </widget>
           </item>
-          <item row="8" column="1">
-           <widget class="QLineEdit" name="FileName_lineEdit">
-            <property name="text">
-             <string>OutputData</string>
-            </property>
-           </widget>
-          </item>
           <item row="7" column="0">
            <widget class="QLabel" name="label_21">
             <property name="text">
              <string>Output Folder Path:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QLineEdit" name="FolderPath_lineEdit">
-            <property name="text">
-             <string>C:\Users\Joseph\Desktop\</string>
             </property>
            </widget>
           </item>
@@ -351,10 +403,10 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
             </property>
            </widget>
           </item>
-          <item row="13" column="1">
-           <widget class="QPushButton" name="SaveOutputData_pushButton">
+          <item row="19" column="1">
+           <widget class="QPushButton" name="pushButton_reset">
             <property name="text">
-             <string>Save</string>
+             <string>Reset</string>
             </property>
            </widget>
           </item>
@@ -363,25 +415,23 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>105</height>
-             </size>
-            </property>
            </spacer>
           </item>
-          <item row="15" column="1">
-           <widget class="QPushButton" name="pushButton_reset">
+          <item row="13" column="1">
+           <widget class="QPushButton" name="SaveOutputData_pushButton">
             <property name="text">
-             <string>Reset</string>
+             <string>Save</string>
             </property>
            </widget>
           </item>
-          <item row="17" column="1">
+          <item row="7" column="1">
+           <widget class="QLineEdit" name="FolderPathOutput_lineEdit">
+            <property name="text">
+             <string>C:\Users\Joseph\Desktop\</string>
+            </property>
+           </widget>
+          </item>
+          <item row="21" column="1">
            <widget class="QCheckBox" name="ResetData_checkBox">
             <property name="text">
              <string>Data</string>

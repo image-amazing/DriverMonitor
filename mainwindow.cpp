@@ -128,11 +128,11 @@ void MainWindow::on_OpenCamera_pushButton_clicked()
     cap.open(0);
     if(!cap.isOpened())
     {
-        ui->statusBar->showMessage("Failed to open camera", 1000);
+        ui->statusBar->showMessage("Failed to open camera", 2000);
     }
     else
     {
-        ui->statusBar->showMessage("Camera is open", 1000);
+        ui->statusBar->showMessage("Camera is open", 2000);
 
         connect(timer, SIGNAL(timeout()), this, SLOT(ProcessCameraFrame()));
         timer->start(20);
@@ -150,7 +150,7 @@ void MainWindow::on_CloseCamera_pushButton_clicked()
     Mat image = Mat::zeros(frame.size(), CV_8UC3);
     show_frame(image);
 
-    ui->statusBar->showMessage("Camera is closed", 1000);
+    ui->statusBar->showMessage("Camera is closed", 2000);
 
     FaceLeft_instanceTrigger = false;
     FaceRight_instanceTrigger = false;
@@ -158,175 +158,11 @@ void MainWindow::on_CloseCamera_pushButton_clicked()
     Yawn_instanceTrigger = false;
 }
 
-//void MainWindow::on_LoadVideo_pushButton_clicked()
-//{
-//    cap.open(ui->VideoInputPath_lineEdit->text().toStdString());
-
-//    if(!cap.isOpened())
-//        ui->statusBar->showMessage("Video file is not loaded", 1000);
-//    else
-//    {
-//        Mat temp_frame;
-//        stored_frame.clear();
-//        while(!(cap.get(CV_CAP_PROP_FRAME_COUNT) > 0 && cap.get(CV_CAP_PROP_POS_FRAMES) == cap.get(CV_CAP_PROP_FRAME_COUNT) - 1))
-//        {
-//            cap >> temp_frame;
-
-//            if(cap.get(CV_CAP_PROP_FRAME_WIDTH) > cap.get(CV_CAP_PROP_FRAME_HEIGHT))
-//            {
-//                double resize_height = 640 * (cap.get(CV_CAP_PROP_FRAME_HEIGHT) / cap.get(CV_CAP_PROP_FRAME_WIDTH));
-//                cv::resize(temp_frame, temp_frame, Size(640, resize_height), 0, 0, INTER_CUBIC);
-//            }
-//            else
-//            {
-//                double resize_width = 480 * (cap.get(CV_CAP_PROP_FRAME_WIDTH) / cap.get(CV_CAP_PROP_FRAME_HEIGHT));
-//                cv::resize(temp_frame, temp_frame, Size(resize_width, 480), 0, 0, INTER_CUBIC);
-//            }
-
-//            //Mat temp1_frame = temp_frame.clone();
-//            stored_frame.push_back(temp_frame);
-//            double LoadingPercent = (cap.get(CV_CAP_PROP_POS_FRAMES) / cap.get(CV_CAP_PROP_FRAME_COUNT)) * 100;
-//            QString LoadingPercent_string = QString::number(LoadingPercent);
-//            LoadingPercent_string += "%";
-//            ui->statusBar->showMessage(LoadingPercent_string, 1000);
-
-//        }
-//        frameDelay = 1000 / cap.get(CV_CAP_PROP_FPS);
-//        ui->OriginalFrameDelay_label->setText(QString::number(frameDelay));
-//        OptimalFrameDelay = frameDelay;
-//        frameIndex = 0;
-//        double VideoDuration;
-//        VideoDuration = trunc(cap.get(CV_CAP_PROP_FRAME_COUNT) / cap.get(CV_CAP_PROP_FPS));
-
-//        QString VideoDuration_minute;
-//        if((VideoDuration / 60) < 10)
-//        {
-//            VideoDuration_minute += QString::number(0);
-//            VideoDuration_minute += QString::number(trunc(VideoDuration / 60));
-//        }
-//        else
-//        {
-//            VideoDuration_minute += QString::number(trunc(VideoDuration / 60));
-//        }
-//        QString VideoDuration_second;
-//        if((VideoDuration - (VideoDuration / 60)) < 10)
-//        {
-//            VideoDuration_second += QString::number(0);
-//            VideoDuration_second += QString::number(VideoDuration - trunc(VideoDuration / 60) * 60);
-//        }
-//        else
-//        {
-//            VideoDuration_second += QString::number(VideoDuration - trunc(VideoDuration / 60) * 60);
-//        }
-//        QString VideoDuration_string;
-//        VideoDuration_string += VideoDuration_minute;
-//        VideoDuration_string += ':';
-//        VideoDuration_string += VideoDuration_second;
-
-//        ui->VideoDuration_label->setText(VideoDuration_string);
-//        ui->statusBar->showMessage("Finished loading video", 1000);
-//    }
-//}
-
-//void MainWindow::on_PlayVideo_pushButton_clicked()
-//{
-//    if(frameIndex == 0 && ui->ProcessVideo_checkBox->isChecked())
-//        ResetData();
-//    VideoTimer.start();
-//    namedWindow("Delay Timer");
-//    moveWindow("Delay Timer", 0, 0);
-
-//    double VideoTime;
-//    ui->Video_horizontalSlider->setMaximum(stored_frame.size());
-//    while(frameIndex < stored_frame.size())
-//    {
-//        if(PauseVideo == true || StopVideo == true)
-//            break;
-
-//        ProcessDelayTimer.start();
-//        VideoTime = (frameIndex * cap.get(CV_CAP_PROP_FRAME_COUNT)) / (stored_frame.size() * cap.get(CV_CAP_PROP_FPS));
-
-//        QString VideoTime_minute;
-//        if((VideoTime / 60) < 10)
-//        {
-//            VideoTime_minute += QString::number(0);
-//            VideoTime_minute += QString::number(trunc(VideoTime / 60));
-//        }
-//        else
-//        {
-//            VideoTime_minute += QString::number(trunc(VideoTime / 60));
-//        }
-//        QString VideoTime_second;
-//        if((VideoTime - trunc(VideoTime / 60)) < 10)
-//        {
-//            VideoTime_second += QString::number(0);
-//            VideoTime_second += QString::number(trunc(VideoTime) - trunc(VideoTime / 60) * 60);
-//        }
-//        else
-//        {
-//            VideoTime_second += QString::number(trunc(VideoTime) - trunc(VideoTime / 60) * 60);
-//        }
-//        QString VideoTime_string;
-//        VideoTime_string += VideoTime_minute;
-//        VideoTime_string += ':';
-//        VideoTime_string += VideoTime_second;
-
-//        ui->VideoTime_label->setText(VideoTime_string);
-
-//        if(ui->ProcessVideo_checkBox->isChecked())
-//        {
-//            frame = stored_frame.at(frameIndex);
-//            ProcessVideoFrame(frame, VideoTime, VideoTime_string);
-//        }
-//        else
-//        {
-//            show_frame(stored_frame.at(frameIndex));
-//        }
-//        ui->Video_horizontalSlider->setValue(frameIndex);
-
-//        frameIndex++;
-
-//        //cout << "Process Delay: " << ProcessDelayTimer.elapsed() << endl;
-//        OptimalFrameDelay = frameDelay - ProcessDelayTimer.elapsed();
-//        if(OptimalFrameDelay < 1)
-//            OptimalFrameDelay = 1;
-//        ui->EffectiveFrameDelay_label->setText(QString::number(OptimalFrameDelay));
-//        cvWaitKey(OptimalFrameDelay);
-//    }
-
-//    destroyWindow("Delay Timer");
-//    if(StopVideo == true)
-//    {
-//        StopVideo = false;
-//        frameIndex = 0;
-//        show_frame(stored_frame.at(frameIndex));
-//        ui->Video_horizontalSlider->setValue(frameIndex);
-//        QString VideoTime_string = "00:00";
-//        ui->VideoTime_label->setText(VideoTime_string);
-//        goto exit;
-//    }
-//    if(PauseVideo == true)
-//    {
-//        PauseVideo = false;
-//        goto exit;
-//    }
-
-//    frameIndex++;
-//    ui->Video_horizontalSlider->setValue(frameIndex);
-//    //ui->VideoTime_label->setText(VideoDuration_string);
-//    frameIndex = 0;
-
-//    exit:
-
-//    cout << "Video Duration: " << cap.get(CV_CAP_PROP_FRAME_COUNT) / cap.get(CV_CAP_PROP_FPS) << endl;
-//    cout << "Video Timer: " << VideoTimer.elapsed() << endl;
-//}
-
 void MainWindow::on_LoadVideo_pushButton_clicked()
 {
     cap.open(ui->VideoInputPath_lineEdit->text().toStdString());
     if(!cap.isOpened())
-        ui->statusBar->showMessage("Video file is not loaded", 1000);
+        ui->statusBar->showMessage("Video file is not loaded", 2000);
     double VideoDuration;
     VideoDuration = trunc(cap.get(CV_CAP_PROP_FRAME_COUNT) / cap.get(CV_CAP_PROP_FPS));
 
@@ -361,24 +197,31 @@ void MainWindow::on_LoadVideo_pushButton_clicked()
     int OriginalFrameDelay = 1000 / cap.get(CV_CAP_PROP_FPS);
     ui->OriginalFrameDelay_label->setText(QString::number(OriginalFrameDelay));
 
-    ui->statusBar->showMessage("Finished loading video", 1000);
+    ui->statusBar->showMessage("Finished loading video", 2000);
     cap.release();
 }
 
 void MainWindow::on_PlayVideo_pushButton_clicked()
 {
     cap.open(ui->VideoInputPath_lineEdit->text().toStdString());
-    if(PauseVideo == true)
+    if(!cap.isOpened())
     {
-        cap.set(CV_CAP_PROP_POS_MSEC, PauseTime);
-        PauseVideo = false;
+        ui->statusBar->showMessage("Failed to open video file", 2000);
     }
     else
     {
-        ResetData();
+        connect(timer, SIGNAL(timeout()), this, SLOT(ProcessVideoFrame()));
+        timer->start(20);
+        if(PauseVideo == true)
+        {
+            cap.set(CV_CAP_PROP_POS_MSEC, PauseTime);
+            PauseVideo = false;
+        }
+        else
+        {
+            ResetData();
+        }
     }
-    connect(timer, SIGNAL(timeout()), this, SLOT(ProcessVideoFrame()));
-    timer->start(20);
 }
 
 void MainWindow::ProcessVideoFrame()
@@ -688,11 +531,6 @@ void MainWindow::ui_functions()
     SlowBlink_thresholdTime = ui->SlowBlink_ThresholdTime_spinBox->value();
     Yawn_thresholdTime = ui->Yawn_ThresholdTime_spinBox->value();
 
-    //Text displays
-//    ui->textBrowser->setText(main_string);
-//    QScrollBar *instance_string_sb = ui->textBrowser->verticalScrollBar();
-//    instance_string_sb->setValue(instance_string_sb->maximum());
-
     //Instance rate displays
     QString HeadTurn_rate_string;
     HeadTurn_rate_string += "Head turn rate(";
@@ -903,8 +741,8 @@ void MainWindow::on_pushButton_reset_clicked()
 
 void MainWindow::on_SaveOutputData_pushButton_clicked()
 {
-    QString FolderPath = ui->FolderPath_lineEdit->text();
-    QString FileName = ui->FileName_lineEdit->text();
+    QString FolderPath = ui->FolderPathOutput_lineEdit->text();
+    QString FileName = ui->FileNameOutput_lineEdit->text();
     int ExistingFileIndex = 0;
     QString FilePath;
     while(1)
@@ -944,8 +782,6 @@ void MainWindow::on_SaveOutputData_pushButton_clicked()
     file.close();
 }
 
-
-
 void MainWindow::on_PauseVideo_pushButton_clicked()
 {
     PauseVideo = true;
@@ -982,4 +818,131 @@ void MainWindow::DisplayCurrentTime()
     QTime time = QTime::currentTime();
     QString time_string = time.toString("hh:mm:ss ap");
     ui->CurrentTime_label->setText(time_string);
+}
+
+void MainWindow::on_LoadSettings_pushButton_clicked()
+{
+    QString FolderPath = ui->FolderPathSettings_lineEdit->text();
+    QString FileName = ui->FileNameSettings_lineEdit->text();
+    QString FilePath;
+    FilePath += FolderPath;
+    FilePath += FileName;
+    FilePath += ".csv";
+
+    ifstream file(FilePath.toStdString());
+
+    if(!file.is_open())
+    {
+        ui->statusBar->showMessage("Cannot find settings file");
+        return;
+    }
+    string value;
+    string label;
+    std::vector<int> values;
+    QString value_qstring;
+    while(file.good())
+    {
+        getline(file, value, ',');
+        getline(file, label, '\n');
+        value_qstring = QString::fromStdString(value);
+        values.push_back(value_qstring.toInt());
+    }
+    file.close();
+
+    ui->HeadTurnLeft_spinBox->setValue(values.at(0));
+    ui->HeadTurnRight_spinBox->setValue(values.at(1));
+    ui->HeadTurn_ThresholdTime_spinBox->setValue(values.at(2));
+    ui->HeadTurn_TimeLimit_spinBox->setValue(values.at(3));
+    ui->Blink_spinBox->setValue(values.at(4));
+    ui->Blink_ThresholdTime_spinBox->setValue(values.at(5));
+    ui->SlowBlink_ThresholdTime_spinBox->setValue(values.at(6));
+    ui->SlowBlink_ThresholdRate_spinBox->setValue(values.at(7));
+    ui->ClosedEyes_TimeLimit_spinBox->setValue(values.at(8));
+    ui->YawnEyes_spinBox->setValue(values.at(9));
+    ui->YawnMouth_spinBox->setValue(values.at(10));
+    ui->Yawn_ThresholdTime_spinBox->setValue(values.at(11));
+    ui->Yawn_ThresholdRate_spinBox->setValue(values.at(12));
+    ui->RefreshRate_spinBox->setValue(values.at(13));
+
+    ui->statusBar->showMessage("Settings loaded successfully", 2000);
+}
+
+void MainWindow::on_SaveSettings_pushButton_clicked()
+{
+    QString FolderPath = ui->FolderPathSettings_lineEdit->text();
+    QString FileName = ui->FileNameSettings_lineEdit->text();
+    QString FilePath;
+    FilePath += FolderPath;
+    FilePath += FileName;
+    FilePath += ".csv";
+
+    QFile file(FilePath);
+    QTextStream out(&file);
+
+    if(!file.open(QIODevice::ReadWrite | QIODevice::Text))
+    {
+        ui->statusBar->showMessage("Cannot find settings file", 2000);
+        return;
+    }
+    out << ui->HeadTurnLeft_spinBox->value()
+        << ","
+        << "Head Turn Left threshold level"
+        << "\n";
+    out << ui->HeadTurnRight_spinBox->value()
+        << ","
+        << "Head Turn Right threshold level"
+        << "\n";
+    out << ui->HeadTurn_ThresholdTime_spinBox->value()
+        << ","
+        << "Head Turn threshold time"
+        << "\n";
+    out << ui->HeadTurn_TimeLimit_spinBox->value()
+        << ","
+        << "Head Turn time limit"
+        << "\n";
+    out << ui->Blink_spinBox->value()
+        << ","
+        << "Blink threshold level"
+        << "\n";
+    out << ui->Blink_ThresholdTime_spinBox->value()
+        << ","
+        << "Blink threshold time"
+        << "\n";
+    out << ui->SlowBlink_ThresholdTime_spinBox->value()
+        << ","
+        << "Slow Blink threshold time"
+        << "\n";
+    out << ui->SlowBlink_ThresholdRate_spinBox->value()
+        << ","
+        << "Slow Blink threshold rate"
+        << "\n";
+    out << ui->ClosedEyes_TimeLimit_spinBox->value()
+        << ","
+        << "Closed Eyes time limit"
+        << "\n";
+    out << ui->YawnEyes_spinBox->value()
+        << ","
+        << "Yawn Eye threshold level"
+        << "\n";
+    out << ui->YawnMouth_spinBox->value()
+        << ","
+        << "Yawn Mouth threshold level"
+        << "\n";
+    out << ui->Yawn_ThresholdTime_spinBox->value()
+        << ","
+        << "Yawn threshold time"
+        << "\n";
+    out << ui->Yawn_ThresholdRate_spinBox->value()
+        << ","
+        << "Yawn threshold rate"
+        << "\n";
+    out << ui->RefreshRate_spinBox->value()
+        << ","
+        << "Refresh rate"
+        << "\n";
+
+    file.flush();
+    file.close();
+
+    ui->statusBar->showMessage("Settings saved successfully", 2000);
 }
