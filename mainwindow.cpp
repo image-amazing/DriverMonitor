@@ -7,6 +7,7 @@ QCPItemLine *Blink_threshold_line;
 QCPItemLine *YawnMouth_threshold_line;
 
 QString OutputData_path;
+QString VideoFilePath;
 
 QTime VideoTimer;
 std::vector<Mat> stored_frame;
@@ -110,6 +111,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(timer, SIGNAL(timeout()), this, SLOT(DisplayCurrentTime()));
     timer->start(20);
+
+    alert->setMedia(QUrl("qrc:/sound/alarm.mp3"));
+
+
 }
 
 MainWindow::~MainWindow()
@@ -153,7 +158,9 @@ void MainWindow::on_CloseCamera_pushButton_clicked()
 
 void MainWindow::on_LoadVideo_pushButton_clicked()
 {
-    cap.open(ui->VideoInputPath_lineEdit->text().toStdString());
+    VideoFilePath = QFileDialog::getOpenFileName(this, tr("Open Video File"), "C:/Users/Joseph/Desktop", "MPEG-4 (*.mp4)");
+    ui->VideoInputPath_lineEdit->setText(VideoFilePath);
+    cap.open(VideoFilePath.toStdString());
     if(!cap.isOpened())
         ui->statusBar->showMessage("Video file is not loaded", 2000);
     double VideoDuration;
@@ -197,7 +204,7 @@ void MainWindow::on_LoadVideo_pushButton_clicked()
 
 void MainWindow::on_PlayVideo_pushButton_clicked()
 {
-    cap.open(ui->VideoInputPath_lineEdit->text().toStdString());
+    cap.open(VideoFilePath.toStdString());
     if(!cap.isOpened())
     {
         ui->statusBar->showMessage("Failed to open video file", 2000);
@@ -226,10 +233,12 @@ void MainWindow::ProcessVideoFrame()
     cap >> frame;
     RotateImage();
 
+    int FrameWidth = ui->FrameWidth_spinBox->value();
+    int FrameHeight = ui->FrameHeight_spinBox->value();
     if(Rotate == 1 || Rotate == 3)
-        cv::resize(frame, frame, Size(360, 640), 0, 0, INTER_CUBIC);
+        cv::resize(frame, frame, Size(FrameHeight, FrameWidth), 0, 0, INTER_CUBIC);
     else
-        cv::resize(frame, frame, Size(640, 360), 0, 0, INTER_CUBIC);
+        cv::resize(frame, frame, Size(FrameWidth, FrameHeight), 0, 0, INTER_CUBIC);
 
     double VideoTime = trunc(cap.get(CV_CAP_PROP_POS_MSEC));
     ui->Video_horizontalSlider->setValue(VideoTime);
@@ -407,6 +416,13 @@ void MainWindow::ProcessCameraFrame()
         HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
         HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
+        if(!HeadTurnLeft.DriverStatus_string.isEmpty() || !HeadTurnRight.DriverStatus_string.isEmpty())
+        {
+            if(alert->state() == QMediaPlayer::PlayingState)
+                alert->setPosition(0);
+            else
+                alert->play();
+        }
 
         driver_monitor LeftEye(shape);
         LeftEye.measure(41, 37, 'y', 39, 36,'x', 100);
@@ -755,24 +771,26 @@ void MainWindow::on_pushButton_reset_clicked()
 
 void MainWindow::on_SaveOutputData_pushButton_clicked()
 {
-    QString FolderPath = ui->FolderPathOutput_lineEdit->text();
-    QString FileName = ui->FileNameOutput_lineEdit->text();
-    int ExistingFileIndex = 0;
-    QString FilePath;
-    while(1)
-    {
-        FilePath.clear();
-        FilePath += FolderPath;
-        FilePath += FileName;
-        if(ExistingFileIndex != 0)
-            FilePath += QString::number(ExistingFileIndex);
-        FilePath += ".csv";
-        QFileInfo *check_file = new QFileInfo(FilePath);
-        if(!check_file->exists())
-            break;
-        ExistingFileIndex++;
-        cout << "File exists" << endl;
-    }
+//    QString FolderPath = ui->FolderPathOutput_lineEdit->text();
+//    QString FileName = ui->FileNameOutput_lineEdit->text();
+//    int ExistingFileIndex = 0;
+//    QString FilePath;
+//    while(1)
+//    {
+//        FilePath.clear();
+//        FilePath += FolderPath;
+//        FilePath += FileName;
+//        if(ExistingFileIndex != 0)
+//            FilePath += QString::number(ExistingFileIndex);
+//        FilePath += ".csv";
+//        QFileInfo *check_file = new QFileInfo(FilePath);
+//        if(!check_file->exists())
+//            break;
+//        ExistingFileIndex++;
+//        cout << "File exists" << endl;
+//    }
+    QString FilePath = QFileDialog::getSaveFileName(this, tr("Save Output Data File"), "C:/Users/Joseph/Desktop", "Comma-Separated Values File (*.csv)");
+    ui->FileNameOutput_lineEdit->setText(FilePath);
 
     QFile file(FilePath);
     QTextStream out(&file);
@@ -784,8 +802,8 @@ void MainWindow::on_SaveOutputData_pushButton_clicked()
     }
     for(int i = 0; i < ui->Main_tableWidget->rowCount(); i++)
     {
-        if(ui->includeCount_checkBox->isChecked())
-            out << i + 1 << ", ";
+//        if(ui->includeCount_checkBox->isChecked())
+//            out << i + 1 << ", ";
         for(int j = 0; j < ui->Main_tableWidget->columnCount(); j++)
         {
             out << ui->Main_tableWidget->item(i, j)->text() << ", ";
@@ -810,7 +828,8 @@ void MainWindow::on_StopVideo_pushButton_clicked()
     if(PauseVideo == true)
         PauseVideo = false;
     cap.release();
-    ui->Video_horizontalSlider->setValue(ui->Video_horizontalSlider->maximum());
+    ui->Video_horizontalSlider->setValue(ui->Video_horizontalSlider->minimum());
+    ui->VideoTime_label->setText("00:00");
     disconnect(timer, SIGNAL(timeout()), this, SLOT(ProcessVideoFrame()));
     timer->start(20);
 }
@@ -829,12 +848,8 @@ void MainWindow::on_Video_horizontalSlider_sliderMoved(int position)
 
 void MainWindow::on_LoadSettings_pushButton_clicked()
 {
-    QString FolderPath = ui->FolderPathSettings_lineEdit->text();
-    QString FileName = ui->FileNameSettings_lineEdit->text();
-    QString FilePath;
-    FilePath += FolderPath;
-    FilePath += FileName;
-    FilePath += ".csv";
+    QString FilePath = QFileDialog::getOpenFileName(this, tr("Open Settings File"), "C:/Users/Joseph/Desktop", "Comma-Separated Values File (*.csv)");
+    ui->FileNameSettings_lineEdit->setText(FilePath);
 
     ifstream file(FilePath.toStdString());
 
@@ -876,12 +891,8 @@ void MainWindow::on_LoadSettings_pushButton_clicked()
 
 void MainWindow::on_SaveSettings_pushButton_clicked()
 {
-    QString FolderPath = ui->FolderPathSettings_lineEdit->text();
-    QString FileName = ui->FileNameSettings_lineEdit->text();
-    QString FilePath;
-    FilePath += FolderPath;
-    FilePath += FileName;
-    FilePath += ".csv";
+    QString FilePath = QFileDialog::getSaveFileName(this, tr("Save File"), "C:/Users/Joseph/Desktop", "Comma-Separated Values File (*.csv)");
+    ui->FileNameSettings_lineEdit->setText(FilePath);
 
     QFile file(FilePath);
     QTextStream out(&file);

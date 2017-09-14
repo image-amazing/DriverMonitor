@@ -13,6 +13,8 @@
 #include <QStringList>
 #include <QFileInfo>
 #include <QThread>
+#include <QMediaPlayer>
+#include <QFileDialog>
 
 namespace Ui {
 class MainWindow;
@@ -154,6 +156,8 @@ private:
     double YawnStartTime;
 
     int Rotate = 0;
+
+    QMediaPlayer *alert = new QMediaPlayer();
 };
 
 #endif // MAINWINDOW_H

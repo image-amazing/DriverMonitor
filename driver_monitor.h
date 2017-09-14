@@ -7,6 +7,7 @@
 #include <QDateTime>
 #include <QTime>
 #include <QTableWidget>
+#include <QMediaPlayer>
 
 #include <iostream>
 
@@ -69,7 +70,6 @@ public:
 private:
     Mat image;
     const dlib::full_object_detection shape;
-
 };
 
 #endif // DRIVER_MONITOR_H

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport
+QT       += core gui printsupport multimedia
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -38,4 +38,9 @@ QMAKE_CXXFLAGS_RELEASE += -mavx
 INCLUDEPATH += C:\opencv\QT_dlib\build\include
 LIBS += -LC:\opencv\QT_dlib\dlib
 LIBS += -ldlib
+
+DISTFILES +=
+
+RESOURCES += \
+    resources.qrc
 

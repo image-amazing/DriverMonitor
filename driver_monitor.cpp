@@ -3,6 +3,7 @@
 driver_monitor::driver_monitor(const dlib::full_object_detection &face_landmark)
     :shape(face_landmark)
 {
+
 }
 
 void driver_monitor::measure(int main_pt1, int main_pt2, char main_axis, int scale_pt1, int scale_pt2, char scale_axis, int scale_factor)
@@ -72,7 +73,9 @@ void driver_monitor::instance(char inst, bool &instance_trigger, QTime &instance
         if(parameter1 > threshold1)
         {
             if(instance_trigger == false)
+            {
                 instance_timer.start();
+            }
             status = 1;
             instance_trigger = true;
         }
