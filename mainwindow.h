@@ -30,15 +30,16 @@ public:
 
     void show_frame(Mat &);
     void face_layout(const dlib::full_object_detection&, Mat image);
-    void ui_functions();
-    void Write_file(QString FilePath);
 
+//    void ResizeImage();
     void RotateImage();
     void ResetData();
     void ResetSettings();
     void ResetTriggers();
 
 private slots:
+    void uiFunctions();
+
     void DisplayCurrentTime();
 
     void ProcessCameraFrame();
@@ -68,6 +69,16 @@ private slots:
     void on_SaveSettings_pushButton_clicked();
 
     void on_Rotate_pushButton_clicked();
+
+    void on_HeadTurnLeft_spinBox_valueChanged(int arg1);
+
+    void on_HeadTurnRight_spinBox_valueChanged(int arg1);
+
+    void on_Blink_spinBox_valueChanged(int arg1);
+
+    void on_YawnMouth_spinBox_valueChanged(int arg1);
+
+    void on_YawnEyes_spinBox_valueChanged(int arg1);
 
 private:
     Ui::MainWindow *ui;
@@ -99,11 +110,11 @@ private:
     int SlowBlink_thresholdTime = 200;
     int Yawn_thresholdTime = 200;
 
-    int HeadTurnLeft_thresholdLevel;
-    int HeadTurnRight_thresholdLevel;
-    int Blink_thresholdLevel;
-    int YawnEyes_thresholdLevel;
-    int YawnMouth_thresholdLevel;
+    int HeadTurnLeft_ThresholdLevel = 65;
+    int HeadTurnRight_ThresholdLevel = 35;
+    int Blink_ThresholdLevel = 25;
+    int YawnEyes_ThresholdLevel = 35;
+    int YawnMouth_ThresholdLevel = 30;
 
     QString main_string = "Start: \n";
     QString HeadTurn_string = "Start: \n";

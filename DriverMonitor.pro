@@ -31,7 +31,8 @@ LIBS += -LC:\opencv\QT_opencv\install\x86\mingw\lib \
     -lopencv_imgproc320.dll \
     -lopencv_features2d320.dll \
     -lopencv_calib3d320.dll \
-    -lopencv_videoio320.dll
+    -lopencv_videoio320.dll \
+    -lopencv_objdetect320.dll
 
 QMAKE_CXXFLAGS_RELEASE += -mavx
 
