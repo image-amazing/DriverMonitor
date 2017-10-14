@@ -340,6 +340,18 @@ void MainWindow::ProcessVideoFrame()
 
             driver_monitor Blink(shape);
             Blink.instance('b', Blink_instanceTrigger, VideoTime, BlinkStartTime, LeftEye.percent, Blink_ThresholdLevel, RightEye.percent, Blink_ThresholdLevel);
+            if(ui->checkBox_BlinkHeadTurn->isChecked())
+            {
+                if((HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true) && Blink_instanceTrigger == true)
+                    Blink_instanceTrigger = false;
+            }
+
+            if(ui->checkBox_BlinkYawn->isChecked())
+            {
+                if(Yawn_instanceTrigger == true && Blink_instanceTrigger == true)
+                        Blink_instanceTrigger = false;
+            }
+
             Blink.classify('b', Blink_instanceTrigger, VideoTime, BlinkStartTime, Blink_thresholdTime, Blink_displayTrigger);
             Blink.instance_rate(Blink_rate, Blink_refreshRate, Blink_thresholdTime, Blink_displayTrigger, VideoTime);
             Blink.instance_rate(SlowBlink_rate, SlowBlink_refreshRate, SlowBlink_thresholdTime, Blink_displayTrigger, VideoTime);
@@ -432,7 +444,6 @@ void MainWindow::ProcessCameraFrame()
         HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
         HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
-        cout << HeadTurnLeft_ThresholdLevel << ' ' << HeadTurnRight_ThresholdLevel << endl;
         if(!HeadTurnLeft.DriverStatus_string.isEmpty() || !HeadTurnRight.DriverStatus_string.isEmpty())
         {
             if(alert->state() == QMediaPlayer::PlayingState)
@@ -451,6 +462,19 @@ void MainWindow::ProcessCameraFrame()
 
         driver_monitor Blink(shape);
         Blink.instance('b', Blink_instanceTrigger, Blink_timer, LeftEye.percent, Blink_ThresholdLevel, RightEye.percent, Blink_ThresholdLevel);
+
+        if(ui->checkBox_BlinkHeadTurn->isChecked())
+        {
+            if((HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true) && Blink_instanceTrigger == true)
+                Blink_instanceTrigger = false;
+        }
+
+        if(ui->checkBox_BlinkYawn->isChecked())
+        {
+            if(Yawn_instanceTrigger == true && Blink_instanceTrigger == true)
+                    Blink_instanceTrigger = false;
+        }
+
         Blink.classify('b', Blink_instanceTrigger, Blink_timer, Blink_thresholdTime, Blink_displayTrigger);
         Blink.instance_rate(Blink_rate, Blink_refreshRate, Blink_thresholdTime, Blink_displayTrigger);
         Blink.instance_rate(SlowBlink_rate, SlowBlink_refreshRate, SlowBlink_thresholdTime, Blink_displayTrigger);
