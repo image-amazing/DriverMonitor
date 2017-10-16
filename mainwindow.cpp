@@ -299,11 +299,23 @@ void MainWindow::ProcessVideoFrame()
 
             if(faces.size() > 1)
             {
-                if(faces.front().area() > faces.back().area())
-                    faces.pop_back();
-                else
-                    faces.erase(faces.begin());
+                for(int i = 0; faces.size() > 1; i++)
+                {
+//                    if(faces.front().area() > faces.back().area())
+//                        faces.pop_back();
+//                    else
+//                        faces.erase(faces.begin());
+                    int face1, face2;
+                    face1 = abs(shapes.front().part(30).x() - 640/2);
+                    face2 = abs(shapes.back().part(30).x() - 640/2);
+
+                    if(face1 < face2)
+                        faces.pop_back();
+                    else
+                        faces.erase(faces.begin());
+                }
             }
+
 
             face_layout(shape, frame);
 
@@ -339,6 +351,12 @@ void MainWindow::ProcessVideoFrame()
             RightEye.eye_parameters(RightEye_max, RightEye_min);
 
             driver_monitor Blink(shape);
+
+            if(HeadTurnLeft_instanceTrigger == true)
+                LeftEye.percent = RightEye.percent;
+            if(HeadTurnRight_instanceTrigger == true)
+                RightEye.percent = LeftEye.percent;
+
             Blink.instance('b', Blink_instanceTrigger, VideoTime, BlinkStartTime, LeftEye.percent, Blink_ThresholdLevel, RightEye.percent, Blink_ThresholdLevel);
             if(ui->checkBox_BlinkHeadTurn->isChecked())
             {
@@ -400,26 +418,24 @@ void MainWindow::ProcessCameraFrame()
         shapes.push_back(shape);
 
         face_layout(shape, frame);
+
         if(faces.size() > 1)
         {
-            double faceCenter1;
-            faceCenter1 = (faces.front().right() - faces.front().left()) / 2 + faces.front().left();
-            double faceCenter2;
-            faceCenter2 = (faces.back().right() - faces.back().left()) / 2 + faces.back().left();
+            for(int i = 0; faces.size() > 1; i++)
+            {
+//                    if(faces.front().area() > faces.back().area())
+//                        faces.pop_back();
+//                    else
+//                        faces.erase(faces.begin());
+                int face1, face2;
+                face1 = abs(shapes.front().part(30).x() - 640/2);
+                face2 = abs(shapes.back().part(30).x() - 640/2);
 
-            double centerDifference1 = abs(faceCenter1 - cap.get(CV_CAP_PROP_FRAME_WIDTH) / 2);
-            double centerDifference2 = abs(faceCenter2 - cap.get(CV_CAP_PROP_FRAME_WIDTH) / 2);
-
-            cout << centerDifference1 << ' ' << centerDifference2 << endl;
-//            if(centerDifference1 < centerDifference2)
-//                faces.pop_back();
-//            else
-//                faces.erase(faces.begin());
-//            if(faces.front().area() > faces.back().area())
-//                faces.pop_back();
-//            else
-//                faces.erase(faces.begin());
-
+                if(face1 < face2)
+                    faces.pop_back();
+                else
+                    faces.erase(faces.begin());
+            }
         }
 
         driver_monitor HeadTurnLeft(shape);
@@ -461,6 +477,12 @@ void MainWindow::ProcessCameraFrame()
         RightEye.eye_parameters(RightEye_max, RightEye_min);
 
         driver_monitor Blink(shape);
+
+        if(HeadTurnLeft_instanceTrigger == true)
+            LeftEye.percent = RightEye.percent;
+        if(HeadTurnRight_instanceTrigger == true)
+            RightEye.percent = LeftEye.percent;
+
         Blink.instance('b', Blink_instanceTrigger, Blink_timer, LeftEye.percent, Blink_ThresholdLevel, RightEye.percent, Blink_ThresholdLevel);
 
         if(ui->checkBox_BlinkHeadTurn->isChecked())
