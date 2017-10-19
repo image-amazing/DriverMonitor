@@ -5,6 +5,11 @@ QCPItemLine *HeadTurnLeft_ThresholdLine;
 QCPItemLine *HeadTurnRight_ThresholdLine;
 QCPItemLine *Blink_ThresholdLine;
 QCPItemLine *YawnMouth_ThresholdLine;
+//QCPItemLine *MouthWidth_ThresholdLine;
+QCPItemLine *SideMouth_ThresholdLine;
+
+QCPItemLine *SmileBlink_ThresholdLine;
+QCPItemLine *HeadTurnBlink_ThresholdLine;
 
 QString VideoFilePath;
 
@@ -19,6 +24,51 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowState(Qt::WindowMaximized);
     timer = new QTimer(this);
 
+//    ui->Smile_widget->addGraph();
+//    ui->Smile_widget->yAxis->setRange(0, 250);
+//    ui->Smile_widget->setInteractions(QCP::iSelectItems | QCP::iRangeDrag);
+//    ui->Smile_widget->axisRect()->setRangeDrag(Qt::Horizontal);
+//    ui->Smile_widget->graph(0)->setLineStyle(QCPGraph::lsLine);
+
+//    MouthWidth_ThresholdLine = new QCPItemLine(ui->Smile_widget);
+//    MouthWidth_ThresholdLine->setSelectable(true);
+//    MouthWidth_ThresholdLine->setPen(QPen(Qt::DashDotLine));
+//    MouthWidth_ThresholdLine->start->setCoords(QCPRange::minRange, 190);
+//    MouthWidth_ThresholdLine->end->setCoords(QCPRange::maxRange, 190);
+
+    ui->SideMouth_plot->addGraph();
+    ui->SideMouth_plot->addGraph();
+    ui->SideMouth_plot->yAxis->setRange(-20, 70);
+    ui->SideMouth_plot->setInteractions(QCP::iSelectItems | QCP::iRangeDrag);
+    ui->SideMouth_plot->axisRect()->setRangeDrag(Qt::Horizontal);
+
+    ui->SideMouth_plot->graph(0)->setLineStyle(QCPGraph::lsLine);
+    ui->SideMouth_plot->graph(1)->setLineStyle(QCPGraph::lsLine);
+
+    ui->SideMouth_plot->graph(0)->setPen(QPen(Qt::red));
+    ui->SideMouth_plot->graph(1)->setPen(QPen(Qt::green));
+
+    SideMouth_ThresholdLine = new QCPItemLine(ui->SideMouth_plot);
+    SideMouth_ThresholdLine->setSelectable(true);
+    SideMouth_ThresholdLine->setPen(QPen(Qt::DashDotLine));
+    SideMouth_ThresholdLine->start->setCoords(QCPRange::minRange, ui->LiptoSideMouth_spinBox->value());
+    SideMouth_ThresholdLine->end->setCoords(QCPRange::maxRange, ui->LiptoSideMouth_spinBox->value());
+
+    SmileBlink_ThresholdLine = new QCPItemLine(ui->Blink_plot);
+    SmileBlink_ThresholdLine->setSelectable(true);
+    SmileBlink_ThresholdLine->setPen(QPen(Qt::darkMagenta));
+    SmileBlink_ThresholdLine->start->setCoords(QCPRange::minRange, ui->SmileBlink_spinBox->value());
+    SmileBlink_ThresholdLine->end->setCoords(QCPRange::maxRange, ui->SmileBlink_spinBox->value());
+
+    HeadTurnBlink_ThresholdLine = new QCPItemLine(ui->Blink_plot);
+    HeadTurnBlink_ThresholdLine->setSelectable(true);
+    HeadTurnBlink_ThresholdLine->setPen(QPen(Qt::blue));
+    HeadTurnBlink_ThresholdLine->start->setCoords(QCPRange::minRange, ui->HeadTurnBlink_spinBox->value());
+    HeadTurnBlink_ThresholdLine->end->setCoords(QCPRange::maxRange, ui->HeadTurnBlink_spinBox->value());
+
+
+
+
     ui->HeadTurn_plot->addGraph();
 
     ui->HeadTurn_plot->yAxis->setRange(0, 100);
@@ -29,14 +79,14 @@ MainWindow::MainWindow(QWidget *parent) :
     HeadTurnLeft_ThresholdLine = new QCPItemLine(ui->HeadTurn_plot);
     HeadTurnLeft_ThresholdLine->setSelectable(true);
     HeadTurnLeft_ThresholdLine->setPen(QPen(Qt::DashDotLine));
-    HeadTurnLeft_ThresholdLine->start->setCoords(QCPRange::minRange, 65);
-    HeadTurnLeft_ThresholdLine->end->setCoords(QCPRange::maxRange, 65);
+    HeadTurnLeft_ThresholdLine->start->setCoords(QCPRange::minRange, ui->HeadTurnLeft_spinBox->value());
+    HeadTurnLeft_ThresholdLine->end->setCoords(QCPRange::maxRange, ui->HeadTurnLeft_spinBox->value());
 
     HeadTurnRight_ThresholdLine = new QCPItemLine(ui->HeadTurn_plot);
     HeadTurnRight_ThresholdLine->setSelectable(true);
     HeadTurnRight_ThresholdLine->setPen(QPen(Qt::DashDotLine));
-    HeadTurnRight_ThresholdLine->start->setCoords(QCPRange::minRange, 35);
-    HeadTurnRight_ThresholdLine->end->setCoords(QCPRange::maxRange, 35);
+    HeadTurnRight_ThresholdLine->start->setCoords(QCPRange::minRange, ui->HeadTurnRight_spinBox->value());
+    HeadTurnRight_ThresholdLine->end->setCoords(QCPRange::maxRange, ui->HeadTurnRight_spinBox->value());
 
     ui->Blink_plot->addGraph();
     ui->Blink_plot->addGraph();
@@ -55,8 +105,8 @@ MainWindow::MainWindow(QWidget *parent) :
     Blink_ThresholdLine = new QCPItemLine(ui->Blink_plot);
     Blink_ThresholdLine->setSelectable(true);
     Blink_ThresholdLine->setPen(QPen(Qt::DashDotLine));
-    Blink_ThresholdLine->start->setCoords(QCPRange::minRange, 25);
-    Blink_ThresholdLine->end->setCoords(QCPRange::maxRange, 25);
+    Blink_ThresholdLine->start->setCoords(QCPRange::minRange, ui->Blink_spinBox->value());
+    Blink_ThresholdLine->end->setCoords(QCPRange::maxRange, ui->Blink_spinBox->value());
 
     ui->Yawn_plot->addGraph();
 
@@ -70,8 +120,8 @@ MainWindow::MainWindow(QWidget *parent) :
     YawnMouth_ThresholdLine = new QCPItemLine(ui->Yawn_plot);
     YawnMouth_ThresholdLine->setSelectable(true);
     YawnMouth_ThresholdLine->setPen(QPen(Qt::DashDotLine));
-    YawnMouth_ThresholdLine->start->setCoords(QCPRange::minRange, 30);
-    YawnMouth_ThresholdLine->end->setCoords(QCPRange::maxRange, 30);
+    YawnMouth_ThresholdLine->start->setCoords(QCPRange::minRange, ui->YawnMouth_spinBox->value());
+    YawnMouth_ThresholdLine->end->setCoords(QCPRange::maxRange, ui->YawnMouth_spinBox->value());
 
     QStringList HeaderName;
     HeaderName << "Time" << "Status" << "Elapsed Time(ms)";
@@ -105,8 +155,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->Yawn_tableWidget->setColumnWidth(2, 135);
 
     detector = get_frontal_face_detector();
-    deserialize("C://shape_predictor_68_face_landmarks.dat") >> shape_model;
-//    deserialize("shape_predictor_68_face_landmarks.dat") >> shape_model;
+//    deserialize("C://shape_predictor_68_face_landmarks.dat") >> shape_model;
+    deserialize("shape_predictor_68_face_landmarks.dat") >> shape_model;
 
     connect(timer, SIGNAL(timeout()), this, SLOT(DisplayCurrentTime()));
     timer->start(20);
@@ -131,6 +181,8 @@ void MainWindow::on_OpenCamera_pushButton_clicked()
     }
     else
     {
+        cap.set(CV_CAP_PROP_FRAME_WIDTH, 640);
+        cap.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
         ui->statusBar->showMessage("Camera is open", 2000);
         ui->OriginalFrameDelay_label->setText("0");
 
@@ -154,9 +206,11 @@ void MainWindow::on_CloseCamera_pushButton_clicked()
 
 void MainWindow::on_LoadVideo_pushButton_clicked()
 {
-    VideoFilePath = QFileDialog::getOpenFileName(this, tr("Open Video File"), "C:/Users/Joseph/Desktop", "MPEG-4 (*.mp4)");
-    ui->VideoInputPath_lineEdit->setText(VideoFilePath);
-    cap.open(VideoFilePath.toStdString());
+    //QString VideoPath;
+    VideoPath = QFileDialog::getOpenFileName(this, tr("Open Video File"), VideoFilePath, "MPEG-4 (*.mp4)");
+    VideoFilePath = QFileInfo(VideoPath).path();
+    ui->VideoInputPath_lineEdit->setText(QFileInfo(VideoPath).fileName());
+    cap.open(VideoPath.toStdString());
     if(!cap.isOpened())
         ui->statusBar->showMessage("Video file is not loaded", 2000);
     double VideoDuration;
@@ -200,7 +254,7 @@ void MainWindow::on_LoadVideo_pushButton_clicked()
 
 void MainWindow::on_PlayVideo_pushButton_clicked()
 {
-    cap.open(VideoFilePath.toStdString());
+    cap.open(VideoPath.toStdString());
     if(!cap.isOpened())
     {
         ui->statusBar->showMessage("Failed to open video file", 2000);
@@ -306,8 +360,8 @@ void MainWindow::ProcessVideoFrame()
 //                    else
 //                        faces.erase(faces.begin());
                     int face1, face2;
-                    face1 = abs(shapes.front().part(30).x() - 640/2);
-                    face2 = abs(shapes.back().part(30).x() - 640/2);
+                    face1 = abs(shapes.front().part(30).x() - ui->label_camera->width()/2);
+                    face2 = abs(shapes.back().part(30).x() - ui->label_camera->width()/2);
 
                     if(face1 < face2)
                         faces.pop_back();
@@ -341,6 +395,7 @@ void MainWindow::ProcessVideoFrame()
             HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), VideoTime, HeadTurnStartTime, HeadTurn_count);
             HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
 
+            //cout << HeadTurn_count << endl;
 
             driver_monitor LeftEye(shape);
             LeftEye.measure(41, 37, 'y', 39, 36,'x', 100);
@@ -353,15 +408,30 @@ void MainWindow::ProcessVideoFrame()
             driver_monitor Blink(shape);
 
             if(HeadTurnLeft_instanceTrigger == true)
+            {
                 LeftEye.percent = RightEye.percent;
+                Blink_ThresholdLevel = HeadTurnBlink_ThresholdLevel;
+            }
             if(HeadTurnRight_instanceTrigger == true)
+            {
                 RightEye.percent = LeftEye.percent;
+                Blink_ThresholdLevel = HeadTurnBlink_ThresholdLevel;
+            }
+            if(SmileStatusIndicator == true || Yawn_instanceTrigger == true)
+            {
+                if(LeftEye.percent > RightEye.percent)
+                    RightEye.percent = LeftEye.percent;
+                else
+                    LeftEye.percent = RightEye.percent;
+
+                Blink_ThresholdLevel = SmileBlink_ThresholdLevel;
+            }
 
             Blink.instance('b', Blink_instanceTrigger, VideoTime, BlinkStartTime, LeftEye.percent, Blink_ThresholdLevel, RightEye.percent, Blink_ThresholdLevel);
-            if(ui->checkBox_BlinkHeadTurn->isChecked())
+
+            if(HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true || SmileStatusIndicator == true || Yawn_instanceTrigger == true)
             {
-                if((HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true) && Blink_instanceTrigger == true)
-                    Blink_instanceTrigger = false;
+                Blink_ThresholdLevel = ui->Blink_spinBox->value();
             }
 
             if(ui->checkBox_BlinkYawn->isChecked())
@@ -374,6 +444,9 @@ void MainWindow::ProcessVideoFrame()
             Blink.instance_rate(Blink_rate, Blink_refreshRate, Blink_thresholdTime, Blink_displayTrigger, VideoTime);
             Blink.instance_rate(SlowBlink_rate, SlowBlink_refreshRate, SlowBlink_thresholdTime, Blink_displayTrigger, VideoTime);
             Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Blink_tableWidget, Blink_displayTrigger, Blink_count, VideoTime_string);
+            Blink.DriverStatus_Drowsy(ui->Blink_ThresholdRate_spinBox->value(), Blink_rate);
+            Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
+
             Blink.DriverStatus_Drowsy(ui->SlowBlink_ThresholdRate_spinBox->value(), SlowBlink_rate);
             Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
             Blink.DriverStatus_Asleep(ui->ClosedEyes_TimeLimit_spinBox->value(), VideoTime, BlinkStartTime, Blink_count);
@@ -393,6 +466,39 @@ void MainWindow::ProcessVideoFrame()
             RightEye_PlotData.append(RightEye.percent);
             Mouth_PlotData.append(Yawn.facial_feature);
             xAxis_PlotData.append(double(HeadTurn_PlotData.size()));
+
+
+            driver_monitor SmileY1(shape);
+            SmileY1.measure(66, 54, 'y', 35, 31, 'x', 100);
+            driver_monitor SmileY2(shape);
+            SmileY2.measure(66, 48, 'y', 35, 31, 'x', 100);
+
+//            cout << SmileY1.facial_feature << ' '
+//               << SmileY2.facial_feature << ' '
+//               << LeftEye.percent << ' '
+//               << RightEye.percent << ' ';
+               //<< endl;
+
+            if(SmileY1.facial_feature > SmileThresholdLevel && SmileY2.facial_feature > SmileThresholdLevel)
+            {
+                SmileStatusIndicator = true;
+                cout << "Smiling" << endl;
+            }
+            else
+            {
+                SmileStatusIndicator = false;
+                cout << "Not Smiling" << endl;
+            }
+
+//            MouthWidth_PlotData.append(Smile.facial_feature);
+
+            SideMouth1_PlotData.append(SmileY1.facial_feature);
+            SideMouth2_PlotData.append(SmileY2.facial_feature);
+
+//        if(Smile.facial_feature > 200)
+//            cout << "Smiling" << endl;
+//        else
+//            cout << "Not Smiling" << endl;
 
 //            uiFunctions();
         }
@@ -428,8 +534,8 @@ void MainWindow::ProcessCameraFrame()
 //                    else
 //                        faces.erase(faces.begin());
                 int face1, face2;
-                face1 = abs(shapes.front().part(30).x() - 640/2);
-                face2 = abs(shapes.back().part(30).x() - 640/2);
+                face1 = abs(shapes.front().part(30).x() - ui->label_camera->width()/2);
+                face2 = abs(shapes.back().part(30).x() - ui->label_camera->width()/2);
 
                 if(face1 < face2)
                     faces.pop_back();
@@ -479,18 +585,36 @@ void MainWindow::ProcessCameraFrame()
         driver_monitor Blink(shape);
 
         if(HeadTurnLeft_instanceTrigger == true)
+        {
             LeftEye.percent = RightEye.percent;
+            Blink_ThresholdLevel = HeadTurnBlink_ThresholdLevel;
+        }
         if(HeadTurnRight_instanceTrigger == true)
+        {
             RightEye.percent = LeftEye.percent;
+            Blink_ThresholdLevel = HeadTurnBlink_ThresholdLevel;
+        }
+        if(SmileStatusIndicator == true || Yawn_instanceTrigger == true)
+        {
+            if(LeftEye.percent > RightEye.percent)
+                RightEye.percent = LeftEye.percent;
+            else
+                LeftEye.percent = RightEye.percent;
+
+            Blink_ThresholdLevel = SmileBlink_ThresholdLevel;
+        }
+
+
+//        cout << Blink_ThresholdLevel << ' ';
 
         Blink.instance('b', Blink_instanceTrigger, Blink_timer, LeftEye.percent, Blink_ThresholdLevel, RightEye.percent, Blink_ThresholdLevel);
 
-        if(ui->checkBox_BlinkHeadTurn->isChecked())
+        if(HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true || SmileStatusIndicator == true || Yawn_instanceTrigger == true)
         {
-            if((HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true) && Blink_instanceTrigger == true)
-                Blink_instanceTrigger = false;
+            Blink_ThresholdLevel = ui->Blink_spinBox->value();
         }
 
+//        cout << Blink_ThresholdLevel << endl;
         if(ui->checkBox_BlinkYawn->isChecked())
         {
             if(Yawn_instanceTrigger == true && Blink_instanceTrigger == true)
@@ -501,6 +625,9 @@ void MainWindow::ProcessCameraFrame()
         Blink.instance_rate(Blink_rate, Blink_refreshRate, Blink_thresholdTime, Blink_displayTrigger);
         Blink.instance_rate(SlowBlink_rate, SlowBlink_refreshRate, SlowBlink_thresholdTime, Blink_displayTrigger);
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->Blink_tableWidget, Blink_displayTrigger, Blink_count);
+        Blink.DriverStatus_Drowsy(ui->Blink_ThresholdRate_spinBox->value(), Blink_rate);
+        Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
+
         Blink.DriverStatus_Drowsy(ui->SlowBlink_ThresholdRate_spinBox->value(), SlowBlink_rate);
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
         Blink.DriverStatus_Asleep(ui->ClosedEyes_TimeLimit_spinBox->value(), Blink_timer, Blink_count);
@@ -521,6 +648,42 @@ void MainWindow::ProcessCameraFrame()
         Mouth_PlotData.append(Yawn.facial_feature);
         xAxis_PlotData.append(double(HeadTurn_PlotData.size()));
 
+//        cout << HeadTurn_count
+//             << ' '
+//             << Blink_count
+//             << ' '
+//             << Yawn_count
+//             << endl;
+
+
+          driver_monitor SmileY1(shape);
+          SmileY1.measure(66, 54, 'y', 35, 31, 'x', 100);
+          driver_monitor SmileY2(shape);
+          SmileY2.measure(66, 48, 'y', 35, 31, 'x', 100);
+
+
+
+          if(SmileY1.facial_feature > SmileThresholdLevel && SmileY2.facial_feature > SmileThresholdLevel)
+          {
+              SmileStatusIndicator = true;
+              cout << "Smiling" << endl;
+          }
+          else
+          {
+              SmileStatusIndicator = false;
+              cout << "Not Smiling" << endl;
+          }
+
+//        MouthWidth_PlotData.append(Smile.facial_feature);
+
+        SideMouth1_PlotData.append(SmileY1.facial_feature);
+        SideMouth2_PlotData.append(SmileY2.facial_feature);
+
+//        if(Smile.facial_feature > 200)
+//            cout << "Smiling" << endl;
+//        else
+//            cout << "Not Smiling" << endl;
+
 //        uiFunctions();
     }
     show_frame(frame);
@@ -529,6 +692,11 @@ void MainWindow::ProcessCameraFrame()
 
 void MainWindow::uiFunctions()
 {
+    HeadTurnBlink_ThresholdLevel = ui->HeadTurnBlink_spinBox->value();
+    SmileBlink_ThresholdLevel = ui->SmileBlink_spinBox->value();
+    SmileThresholdLevel = ui->LiptoSideMouth_spinBox->value();
+
+
     //Instance data plot update
     ui->HeadTurn_plot->graph(0)->setData(xAxis_PlotData, HeadTurn_PlotData);
     ui->HeadTurn_plot->xAxis->setRange((HeadTurn_PlotData.size()), 100, Qt::AlignRight);
@@ -546,6 +714,17 @@ void MainWindow::uiFunctions()
     ui->Yawn_plot->replot();
     ui->Yawn_plot->update();
 
+//    ui->Smile_widget->graph(0)->setData(xAxis_PlotData, MouthWidth_PlotData);
+//    ui->Smile_widget->xAxis->setRange(xAxis_PlotData.size(), 100, Qt::AlignRight);
+//    ui->Smile_widget->replot();
+//    ui->Smile_widget->update();
+
+    ui->SideMouth_plot->graph(0)->setData(xAxis_PlotData, SideMouth1_PlotData);
+    ui->SideMouth_plot->graph(1)->setData(xAxis_PlotData, SideMouth2_PlotData);
+    ui->SideMouth_plot->xAxis->setRange(xAxis_PlotData.size(), 100, Qt::AlignRight);
+    ui->SideMouth_plot->replot();
+    ui->SideMouth_plot->update();
+
     //Instance trigger indicator
     if(HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true)
         ui->HeadTurn_trigger_indicator->setStyleSheet("QLabel { background-color : lime; }");
@@ -561,6 +740,12 @@ void MainWindow::uiFunctions()
         ui->Yawn_trigger_indicator->setStyleSheet("QLabel { background-color : lime; }");
     else
         ui->Yawn_trigger_indicator->setStyleSheet("QLabel { background-color : darkgreen; }");
+
+
+    if(SmileStatusIndicator == true)
+        ui->SmileIndicator->setStyleSheet("QLabel { background-color : lime; }");
+    else
+        ui->SmileIndicator->setStyleSheet("QLabel { background-color : darkgreen; }");
 
     //Instance refresh rate
     HeadTurn_refreshRate = ui->RefreshRate_spinBox->value();
@@ -604,14 +789,14 @@ void MainWindow::uiFunctions()
     ui->Yawn_rate_text->setText(Yawn_rate_string);
 
     //Face layout color settings
-    ui->blue_horizontalSlider->setRange(0, 255);
-    blue = ui->blue_horizontalSlider->value();
+//    ui->blue_horizontalSlider->setRange(0, 255);
+//    blue = ui->blue_horizontalSlider->value();
 
-    ui->green_horizontalSlider->setRange(0, 255);
-    green = ui->green_horizontalSlider->value();
+//    ui->green_horizontalSlider->setRange(0, 255);
+//    green = ui->green_horizontalSlider->value();
 
-    ui->red_horizontalSlider->setRange(0, 255);
-    red = ui->red_horizontalSlider->value();
+//    ui->red_horizontalSlider->setRange(0, 255);
+//    red = ui->red_horizontalSlider->value();
 
 
     //QTableWidgetItem font size
@@ -700,6 +885,9 @@ void MainWindow::face_layout(const dlib::full_object_detection& shape, Mat image
             isClosed = false;
         else
             isClosed = true;
+        blue = 0;
+        green = 255;
+        red = 0;
         cv::polylines(image, points, isClosed, cv::Scalar(blue, green, red), 1, 16);
         points.clear();
     }
@@ -726,6 +914,10 @@ void MainWindow::ResetData()
     RightEye_PlotData.clear();
     Mouth_PlotData.clear();
     xAxis_PlotData.clear();
+
+//    MouthWidth_PlotData.clear();
+    SideMouth1_PlotData.clear();
+    SideMouth2_PlotData.clear();
 
     for(int i = ui->Main_tableWidget->rowCount(); i >= 0; --i)
     {
@@ -755,39 +947,39 @@ void MainWindow::DisplayCurrentTime()
     ui->CurrentTime_label->setText(time_string);
 }
 
-void MainWindow::on_pushButton_reset_clicked()
-{
-    if(ui->ResetData_checkBox->isChecked() == true)
-    {
-        ResetData();
-    }
+//void MainWindow::on_pushButton_reset_clicked()
+//{
+//    if(ui->ResetData_checkBox->isChecked() == true)
+//    {
+//        ResetData();
+//    }
 
-    if(ui->ResetSettings_checkBox->isChecked() == true)
-    {
-        LeftEye_max = 0;
-        RightEye_max = 0;
-        LeftEye_min = 100;
-        RightEye_min = 100;
+//    if(ui->ResetSettings_checkBox->isChecked() == true)
+//    {
+//        LeftEye_max = 0;
+//        RightEye_max = 0;
+//        LeftEye_min = 100;
+//        RightEye_min = 100;
 
-        ui->HeadTurnLeft_spinBox->setValue(65);
-        ui->HeadTurnRight_spinBox->setValue(35);
-        ui->Blink_spinBox->setValue(25);
-        ui->YawnEyes_spinBox->setValue(35);
-        ui->YawnMouth_spinBox->setValue(30);
+//        ui->HeadTurnLeft_spinBox->setValue(65);
+//        ui->HeadTurnRight_spinBox->setValue(35);
+//        ui->Blink_spinBox->setValue(25);
+//        ui->YawnEyes_spinBox->setValue(35);
+//        ui->YawnMouth_spinBox->setValue(30);
 
-        ui->HeadTurn_ThresholdTime_spinBox->setValue(0);
-        ui->Blink_ThresholdTime_spinBox->setValue(0);
-        ui->SlowBlink_ThresholdTime_spinBox->setValue(200);
-        ui->Yawn_ThresholdTime_spinBox->setValue(200);
+//        ui->HeadTurn_ThresholdTime_spinBox->setValue(0);
+//        ui->Blink_ThresholdTime_spinBox->setValue(0);
+//        ui->SlowBlink_ThresholdTime_spinBox->setValue(200);
+//        ui->Yawn_ThresholdTime_spinBox->setValue(200);
 
-        ui->HeadTurn_TimeLimit_spinBox->setValue(2000);
-        ui->SlowBlink_ThresholdRate_spinBox->setValue(3);
-        ui->ClosedEyes_TimeLimit_spinBox->setValue(2000);
-        ui->Yawn_ThresholdRate_spinBox->setValue(3);
+//        ui->HeadTurn_TimeLimit_spinBox->setValue(2000);
+//        ui->SlowBlink_ThresholdRate_spinBox->setValue(3);
+//        ui->ClosedEyes_TimeLimit_spinBox->setValue(2000);
+//        ui->Yawn_ThresholdRate_spinBox->setValue(3);
 
-        ui->RefreshRate_spinBox->setValue(10);
-    }
-}
+//        ui->RefreshRate_spinBox->setValue(10);
+//    }
+//}
 
 void MainWindow::on_SaveOutputData_pushButton_clicked()
 {
@@ -885,6 +1077,12 @@ void MainWindow::on_LoadSettings_pushButton_clicked()
     ui->Yawn_ThresholdTime_spinBox->setValue(values.at(11));
     ui->Yawn_ThresholdRate_spinBox->setValue(values.at(12));
     ui->RefreshRate_spinBox->setValue(values.at(13));
+    LeftEye_max = values.at(14);
+    RightEye_max = values.at(15);
+    ui->Blink_ThresholdRate_spinBox->setValue(values.at(16));
+    ui->HeadTurnBlink_spinBox->setValue(values.at(17));
+    ui->SmileBlink_spinBox->setValue(values.at(18));
+    ui->LiptoSideMouth_spinBox->setValue(values.at(19));
 
     ui->statusBar->showMessage("Settings loaded successfully", 2000);
 }
@@ -957,6 +1155,30 @@ void MainWindow::on_SaveSettings_pushButton_clicked()
     out << ui->RefreshRate_spinBox->value()
         << ","
         << "Refresh rate"
+        << "\n";
+    out << LeftEye_max
+        << ","
+        << "Left Eye max"
+        << "\n";
+    out << RightEye_max
+        << ","
+        << "Right Eye max"
+        << "\n";
+    out << ui->Blink_ThresholdRate_spinBox->value()
+        << ","
+        << "Blink threshold rate"
+        << "\n";
+    out << ui->HeadTurnBlink_spinBox->value()
+        << ","
+        << "Head Turn Blink threshold level"
+        << "\n";
+    out << ui->SmileBlink_spinBox->value()
+        << ","
+        << "Smile Blink threshold level"
+        << "\n";
+    out << ui->LiptoSideMouth_spinBox->value()
+        << ","
+        << "Smile threshold level"
         << "\n";
 
     file.flush();
@@ -1049,4 +1271,96 @@ void MainWindow::on_YawnMouth_spinBox_valueChanged(int arg1)
 void MainWindow::on_YawnEyes_spinBox_valueChanged(int arg1)
 {
     YawnEyes_ThresholdLevel = arg1;
+}
+
+void MainWindow::on_LoadImage_pushButton_clicked()
+{
+    QString ImageFilePath = QFileDialog::getOpenFileName(this, tr("Open Image File"), ImagePath, "JPEG (*.jpg)");
+    ImagePath = QFileInfo(ImageFilePath).path();
+    ui->VideoInputPath_lineEdit->setText(QFileInfo(ImageFilePath).fileName());
+    Mat Image;
+    Image = imread(ImageFilePath.toStdString());
+
+    cv::resize(Image, Image, Size(640, 360));
+
+    array2d<bgr_pixel> dlib_image;
+    assign_image(dlib_image, cv_image<bgr_pixel>(Image));
+
+    std::vector<dlib::rectangle> faces = detector(dlib_image);
+
+    std::vector<full_object_detection> shapes;
+    for(unsigned long i = 0; i < faces.size(); i++)
+    {
+        full_object_detection shape = shape_model(dlib_image, faces[i]);
+        shapes.push_back(shape);
+        face_layout(shape, Image);
+    }
+    show_frame(Image);
+}
+
+void MainWindow::on_LiptoSideMouth_spinBox_valueChanged(int arg1)
+{
+    SmileThresholdLevel = arg1;
+    ui->SideMouth_plot->removeItem(SideMouth_ThresholdLine);
+    SideMouth_ThresholdLine = new QCPItemLine(ui->SideMouth_plot);
+    SideMouth_ThresholdLine->setPen(QPen(Qt::DashDotLine));
+    SideMouth_ThresholdLine->start->setCoords(QCPRange::minRange, SmileThresholdLevel);
+    SideMouth_ThresholdLine->end->setCoords(QCPRange::maxRange, SmileThresholdLevel);
+    ui->SideMouth_plot->replot();
+}
+
+void MainWindow::on_HeadTurnBlink_spinBox_valueChanged(int arg1)
+{
+    HeadTurnBlink_ThresholdLevel = arg1;
+    ui->Blink_plot->removeItem(HeadTurnBlink_ThresholdLine);
+    HeadTurnBlink_ThresholdLine = new QCPItemLine(ui->Blink_plot);
+    HeadTurnBlink_ThresholdLine->setPen(QPen(Qt::blue));
+    HeadTurnBlink_ThresholdLine->start->setCoords(QCPRange::minRange, HeadTurnBlink_ThresholdLevel);
+    HeadTurnBlink_ThresholdLine->end->setCoords(QCPRange::maxRange, HeadTurnBlink_ThresholdLevel);
+    ui->Blink_plot->replot();
+}
+
+void MainWindow::on_SmileBlink_spinBox_valueChanged(int arg1)
+{
+    SmileBlink_ThresholdLevel = arg1;
+    ui->Blink_plot->removeItem(SmileBlink_ThresholdLine);
+    SmileBlink_ThresholdLine = new QCPItemLine(ui->Blink_plot);
+    SmileBlink_ThresholdLine->setPen(QPen(Qt::darkMagenta));
+    SmileBlink_ThresholdLine->start->setCoords(QCPRange::minRange, SmileBlink_ThresholdLevel);
+    SmileBlink_ThresholdLine->end->setCoords(QCPRange::maxRange, SmileBlink_ThresholdLevel);
+    ui->Blink_plot->replot();
+}
+void MainWindow::on_ResetData_pushButton_clicked()
+{
+    ResetData();
+}
+
+void MainWindow::on_ResetSettings_pushButton_clicked()
+{
+    LeftEye_max = 0;
+    RightEye_max = 0;
+    LeftEye_min = 100;
+    RightEye_min = 100;
+
+    ui->HeadTurnLeft_spinBox->setValue(65);
+    ui->HeadTurnRight_spinBox->setValue(35);
+    ui->HeadTurn_ThresholdTime_spinBox->setValue(0);
+    ui->HeadTurn_TimeLimit_spinBox->setValue(2000);
+
+    ui->Blink_spinBox->setValue(25);
+    ui->Blink_ThresholdTime_spinBox->setValue(0);
+    ui->SlowBlink_ThresholdTime_spinBox->setValue(400);
+    ui->Blink_ThresholdRate_spinBox->setValue(10);
+    ui->SlowBlink_ThresholdRate_spinBox->setValue(1);
+    ui->ClosedEyes_TimeLimit_spinBox->setValue(1000);
+    ui->HeadTurnBlink_spinBox->setValue(40);
+    ui->SmileBlink_spinBox->setValue(5);
+
+    ui->YawnEyes_spinBox->setValue(35);
+    ui->YawnMouth_spinBox->setValue(30);
+    ui->Yawn_ThresholdTime_spinBox->setValue(200);
+    ui->Yawn_ThresholdRate_spinBox->setValue(3);
+
+    ui->LiptoSideMouth_spinBox->setValue(20);
+    ui->RefreshRate_spinBox->setValue(60);
 }

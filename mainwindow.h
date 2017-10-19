@@ -50,7 +50,7 @@ private slots:
 
     void on_CloseCamera_pushButton_clicked();
 
-    void on_pushButton_reset_clicked();
+//    void on_pushButton_reset_clicked();
 
     void on_SaveOutputData_pushButton_clicked();
 
@@ -79,6 +79,18 @@ private slots:
     void on_YawnMouth_spinBox_valueChanged(int arg1);
 
     void on_YawnEyes_spinBox_valueChanged(int arg1);
+
+    void on_LoadImage_pushButton_clicked();
+
+    void on_LiptoSideMouth_spinBox_valueChanged(int arg1);
+
+    void on_HeadTurnBlink_spinBox_valueChanged(int arg1);
+
+    void on_SmileBlink_spinBox_valueChanged(int arg1);
+
+    void on_ResetData_pushButton_clicked();
+
+    void on_ResetSettings_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
@@ -169,6 +181,29 @@ private:
     int Rotate = 0;
 
     QMediaPlayer *alert = new QMediaPlayer();
+
+    int SmileMax = 0;
+    int SmileMin;
+
+    QString ImagePath;
+    QString VideoPath;
+
+//    int MouthThresholdLevel;
+
+//    QVector<double> MouthWidth_PlotData;
+    QVector<double> SideMouth1_PlotData;
+    QVector<double> SideMouth2_PlotData;
+
+    int SmileThresholdLevel;
+
+    bool SmileStatusIndicator;
+
+    int HeadTurnBlink_ThresholdLevel;
+    int SmileBlink_ThresholdLevel;
+
+signals:
+    void SmileStatus(const bool &status);
 };
+
 
 #endif // MAINWINDOW_H
