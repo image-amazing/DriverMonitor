@@ -21,6 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    chat = new Chat(this);
+    chat->show();
+    connect(chat, SIGNAL(Distracted(QString)), this, SLOT(fromBluetooth(QString)));
+    connect(this, SIGNAL(passToBluetooth(QString)), chat, SLOT(sendClicked(QString)));
+
     this->setWindowState(Qt::WindowMaximized);
     timer = new QTimer(this);
 
@@ -192,6 +197,26 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::passToBluetooth(const QString &message)
+{
+    if(message == "Open Camera\n")
+    {
+        on_OpenCamera_pushButton_clicked();
+    }
+    else if(message == "Close Camera\n")
+    {
+        on_CloseCamera_pushButton_clicked();
+    }
+    else if(message == "Enable Distracted\n")
+    {
+        enableDistracted = true;
+    }
+    else if(message == "Disable Distracted\n")
+    {
+        enableDistracted = false;
+    }
 }
 
 void MainWindow::on_OpenCamera_pushButton_clicked()
@@ -577,7 +602,13 @@ void MainWindow::ProcessCameraFrame()
         HeadTurnLeft.classify('l', HeadTurnLeft_instanceTrigger, HeadTurn_timer, HeadTurn_thresholdTime, HeadTurnLeft_displayTrigger);
         HeadTurnLeft.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, HeadTurnLeft_displayTrigger);
         HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, HeadTurnLeft_displayTrigger, HeadTurn_count);
-        HeadTurnLeft.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
+
+        if(enableDistracted == true)
+        {
+            HeadTurnLeft.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
+            if(!HeadTurnLeft.DriverStatus_string.isEmpty())
+                emit passToBluetooth("Alarm");
+        }
         HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
         HeadTurnRight.head_parameters(HeadTurnRight.facial_feature, HeadTurnLeft.facial_feature);
@@ -585,7 +616,13 @@ void MainWindow::ProcessCameraFrame()
         HeadTurnRight.classify('r', HeadTurnRight_instanceTrigger, HeadTurn_timer, HeadTurn_thresholdTime, HeadTurnRight_displayTrigger);
         HeadTurnRight.instance_rate(HeadTurn_rate, HeadTurn_refreshRate, HeadTurn_thresholdTime, HeadTurnRight_displayTrigger);
         HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget, ui->HeadTurn_tableWidget, HeadTurnRight_displayTrigger, HeadTurn_count);
-        HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
+
+        if(enableDistracted == true)
+        {
+            HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
+            if(!HeadTurnRight.DriverStatus_string.isEmpty())
+                emit passToBluetooth("Alarm");
+        }
         HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
         if(!HeadTurnLeft.DriverStatus_string.isEmpty() || !HeadTurnRight.DriverStatus_string.isEmpty())

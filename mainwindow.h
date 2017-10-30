@@ -16,6 +16,8 @@
 #include <QMediaPlayer>
 #include <QFileDialog>
 
+#include <chat.h>
+
 namespace Ui {
 class MainWindow;
 }
@@ -37,7 +39,12 @@ public:
     void ResetSettings();
     void ResetTriggers();
 
+signals:
+    void passToBluetooth(const QString &message);
+
 private slots:
+    void fromBluetooth(const QString &message);
+
     void uiFunctions();
 
     void DisplayCurrentTime();
@@ -94,6 +101,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    Chat *chat;
 
     QTimer *timer;
     VideoCapture cap;
@@ -201,8 +210,8 @@ private:
     int HeadTurnBlink_ThresholdLevel;
     int SmileBlink_ThresholdLevel;
 
-signals:
-    void SmileStatus(const bool &status);
+    bool enableDistracted;
+
 };
 
 
