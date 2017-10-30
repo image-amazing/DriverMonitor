@@ -155,8 +155,30 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->Yawn_tableWidget->setColumnWidth(2, 135);
 
     detector = get_frontal_face_detector();
-//    deserialize("C://shape_predictor_68_face_landmarks.dat") >> shape_model;
+
+    try
+    {
     deserialize("shape_predictor_68_face_landmarks.dat") >> shape_model;
+    }
+
+    catch (serialization_error &e)
+    {
+        while(true)
+        {
+            ui->statusBar->showMessage("Failed to load shape predictor", 0);
+            QString shapePredictorPath = QFileDialog::getOpenFileName(this, tr("Open Shape Predictor File"), VideoFilePath, "(*.dat)");
+            try
+            {
+                deserialize(shapePredictorPath.toStdString()) >> shape_model;
+                ui->statusBar->clearMessage();
+                break;
+            }
+            catch(serialization_error &e)
+            {
+
+            }
+        }
+    }
 
     connect(timer, SIGNAL(timeout()), this, SLOT(DisplayCurrentTime()));
     timer->start(20);
