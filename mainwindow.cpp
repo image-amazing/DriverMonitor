@@ -151,8 +151,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->Yawn_tableWidget->setColumnWidth(2, 135);
 
     detector = get_frontal_face_detector();
-    deserialize("/home/joseph/Desktop/shape_predictor_68_face_landmarks.dat") >> shape_model;
+//    deserialize("/home/joseph/Desktop/shape_predictor_68_face_landmarks.dat") >> shape_model;
 //    deserialize("shape_predictor_68_face_landmarks.dat") >> shape_model;
+
+    try
+    {
+        deserialize("shape_predictor_68_face_landmarks.dat") >> shape_model;
+    }
+
+    catch (serialization_error &e)
+    {
+        while(true)
+        {
+            ui->statusBar->showMessage("Failed to load shape predictor", 0);
+            QString shapePredictorPath = QFileDialog::getOpenFileName(this, tr("Open Shape Predictor File"), VideoFilePath, "(*.dat)");
+            try
+            {
+                deserialize(shapePredictorPath.toStdString()) >> shape_model;
+                ui->statusBar->clearMessage();
+                break;
+            }
+            catch(serialization_error &e)
+            {
+
+            }
+        }
+    }
 
     connect(timer, SIGNAL(timeout()), this, SLOT(DisplayCurrentTime()));
     timer->start(20);
@@ -477,6 +501,23 @@ void MainWindow::ProcessVideoFrame()
             Yawn.DriverStatus_Drowsy(ui->Yawn_ThresholdRate_spinBox->value(), Yawn_rate, SlowBlink_rate, Blink_rate);
             Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget, VideoTime_string);
 
+            driver_monitor SmileY1(shape);
+            SmileY1.measure(66, 54, 'y', 35, 31, 'x', 100);
+            driver_monitor SmileY2(shape);
+            SmileY2.measure(66, 48, 'y', 35, 31, 'x', 100);
+
+            if(SmileY1.facial_feature > SmileThresholdLevel && SmileY2.facial_feature > SmileThresholdLevel)
+            {
+                SmileStatusIndicator = true;
+            }
+            else
+            {
+                SmileStatusIndicator = false;
+            }
+
+            SideMouth1_PlotData.append(SmileY1.facial_feature);
+            SideMouth2_PlotData.append(SmileY2.facial_feature);
+
             HeadTurn_PlotData.append(double(HeadTurnLeft.percent));
             LeftEye_PlotData.append(LeftEye.percent);
             RightEye_PlotData.append(RightEye.percent);
@@ -512,10 +553,6 @@ void MainWindow::ProcessCameraFrame()
         {
             for(int i = 0; faces.size() > 1; i++)
             {
-//                    if(faces.front().area() > faces.back().area())
-//                        faces.pop_back();
-//                    else
-//                        faces.erase(faces.begin());
                 int face1, face2;
                 face1 = abs(shapes.front().part(30).x() - 640/2);
                 face2 = abs(shapes.back().part(30).x() - 640/2);
@@ -624,9 +661,6 @@ void MainWindow::ProcessCameraFrame()
             Blink_ThresholdLevel = SmileBlink_ThresholdLevel;
         }
 
-
-//        cout << Blink_ThresholdLevel << ' ';
-
         Blink.instance('b', Blink_instanceTrigger, Blink_timer, LeftEye.percent, Blink_ThresholdLevel, RightEye.percent, Blink_ThresholdLevel);
 
         if(HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true || SmileStatusIndicator == true || Yawn_instanceTrigger == true)
@@ -634,7 +668,6 @@ void MainWindow::ProcessCameraFrame()
             Blink_ThresholdLevel = ui->Blink_spinBox->value();
         }
 
-//        cout << Blink_ThresholdLevel << endl;
         if(ui->checkBox_BlinkYawn->isChecked())
         {
             if(Yawn_instanceTrigger == true && Blink_instanceTrigger == true)
@@ -696,6 +729,23 @@ void MainWindow::ProcessCameraFrame()
             emit sendEntry(Yawn.tableEntry);
         }
 
+        driver_monitor SmileY1(shape);
+        SmileY1.measure(66, 54, 'y', 35, 31, 'x', 100);
+        driver_monitor SmileY2(shape);
+        SmileY2.measure(66, 48, 'y', 35, 31, 'x', 100);
+
+        if(SmileY1.facial_feature > SmileThresholdLevel && SmileY2.facial_feature > SmileThresholdLevel)
+        {
+            SmileStatusIndicator = true;
+        }
+        else
+        {
+            SmileStatusIndicator = false;
+        }
+
+        SideMouth1_PlotData.append(SmileY1.facial_feature);
+        SideMouth2_PlotData.append(SmileY2.facial_feature);
+
         HeadTurn_PlotData.append(double(HeadTurnLeft.percent));
         LeftEye_PlotData.append(LeftEye.percent);
         RightEye_PlotData.append(RightEye.percent);
@@ -726,6 +776,17 @@ void MainWindow::uiFunctions()
     ui->Yawn_plot->xAxis->setRange((xAxis_PlotData.size()), 100, Qt::AlignRight);
     ui->Yawn_plot->replot();
     ui->Yawn_plot->update();
+
+//    ui->Smile_widget->graph(0)->setData(xAxis_PlotData, MouthWidth_PlotData);
+//    ui->Smile_widget->xAxis->setRange(xAxis_PlotData.size(), 100, Qt::AlignRight);
+//    ui->Smile_widget->replot();
+//    ui->Smile_widget->update();
+
+    ui->SideMouth_plot->graph(0)->setData(xAxis_PlotData, SideMouth1_PlotData);
+    ui->SideMouth_plot->graph(1)->setData(xAxis_PlotData, SideMouth2_PlotData);
+    ui->SideMouth_plot->xAxis->setRange(xAxis_PlotData.size(), 100, Qt::AlignRight);
+    ui->SideMouth_plot->replot();
+    ui->SideMouth_plot->update();
 
     //Instance trigger indicator
     if(HeadTurnLeft_instanceTrigger == true || HeadTurnRight_instanceTrigger == true)

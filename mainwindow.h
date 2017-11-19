@@ -211,7 +211,7 @@ private:
     int HeadTurnBlink_ThresholdLevel = 40;
     int SmileBlink_ThresholdLevel = 5;
 
-    bool enableDistracted;
+    bool enableDistracted = false;
 
     QString tableEntry;
 
