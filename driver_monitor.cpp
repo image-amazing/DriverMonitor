@@ -218,13 +218,15 @@ void driver_monitor::instance_rate(std::vector<int> &instance_count, int time_sp
     }
 }
 
-void driver_monitor::DriverStatus_Drowsy(unsigned int threshold, std::vector<int> &instance_count)
+void driver_monitor::DriverStatus_Drowsy(unsigned int threshold, std::vector<int> &instance_count, std::vector<int> &instance_count2, std::vector<int> &instance_count3)
 {
     DriverStatus_string.clear();
     if(instance_count.size() >= threshold)
     {
         DriverStatus_string = "Drowsy";
         instance_count.clear();
+        instance_count2.clear();
+        instance_count3.clear();
     }
 }
 
@@ -288,6 +290,11 @@ void driver_monitor::DisplayTo_QTableWidget(QTableWidget *Main_tableWidget, QTab
 
         displayTrigger = false;
         count++;
+
+        tableEntry = "entry";
+        tableEntry += time_string;
+        tableEntry += string_status;
+        tableEntry += QString::number(instance_time);
     }
 }
 
@@ -318,6 +325,11 @@ void driver_monitor::DisplayTo_QTableWidget(QTableWidget *Main_tableWidget)
         Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 0, new QTableWidgetItem(time_string));
         Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 1, new QTableWidgetItem(DriverStatus_string));
         Main_tableWidget->setItem(Main_tableWidget->rowCount() - 1, 2, new QTableWidgetItem);
+
+        tableEntry = "entry";
+        tableEntry += time_string;
+        tableEntry += DriverStatus_string;
+        tableEntry += " ";
     }
 }
 

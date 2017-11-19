@@ -54,7 +54,7 @@ public:
     QString time_string = time.toString("hh:mm:ss ap");
     int instance_time;    
 
-    void DriverStatus_Drowsy(unsigned int threshold, std::vector<int> &instance_count);
+    void DriverStatus_Drowsy(unsigned int threshold, std::vector<int> &instance_count, std::vector<int> &instance_count2, std::vector<int> &instance_count3);
     void DriverStatus_Distracted(int threshold, QTime &instance_timer, int instance_count);
     void DriverStatus_Asleep(int threshold, QTime &instance_timer, int instance_count);
     QString DriverStatus_string;
@@ -67,6 +67,7 @@ public:
     void DisplayTo_QTableWidget(QTableWidget *Main_tableWidget);
     void DisplayTo_QTableWidget(QTableWidget *Main_tableWidget, QString VideoTime_string);
 
+    QString tableEntry;
 
 private:
     Mat image;

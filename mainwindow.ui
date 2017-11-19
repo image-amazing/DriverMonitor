@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1408</width>
-    <height>794</height>
+    <height>892</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -252,7 +252,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_4">
        <attribute name="title">
@@ -824,7 +824,7 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
                <number>30</number>
               </property>
               <property name="value">
-               <number>1</number>
+               <number>10</number>
               </property>
              </widget>
             </item>
@@ -888,7 +888,7 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
             <item row="4" column="2">
              <widget class="QSpinBox" name="Blink_ThresholdRate_spinBox">
               <property name="value">
-               <number>10</number>
+               <number>20</number>
               </property>
              </widget>
             </item>
@@ -1063,7 +1063,7 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
                <number>100</number>
               </property>
               <property name="value">
-               <number>35</number>
+               <number>60</number>
               </property>
              </widget>
             </item>
@@ -1120,7 +1120,7 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
                <number>10</number>
               </property>
               <property name="value">
-               <number>3</number>
+               <number>1</number>
               </property>
              </widget>
             </item>
@@ -1282,6 +1282,23 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
           </item>
          </layout>
         </item>
+        <item row="7" column="0">
+         <widget class="QTextEdit" name="bluetoothTextEdit"/>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_30">
+          <property name="text">
+           <string>Bluetooth:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QPushButton" name="connectBluetoothButton">
+          <property name="text">
+           <string>Connect</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -1294,7 +1311,7 @@ selection-color: qradialgradient(spread:repeat, cx:0.5, cy:0.5, radius:0.077, fx
      <x>0</x>
      <y>0</y>
      <width>1408</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDriver_Monitor">

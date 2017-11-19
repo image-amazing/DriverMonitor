@@ -67,7 +67,8 @@ public:
 
 signals:
     void sendMessage(const QString &message);
-    void Distracted(const QString &status);
+    void fromBluetooth(const QString &status);
+    void textDisplay(const QString &sender, const QString &message);
 
 private slots:
     void connectClicked();

@@ -15,6 +15,7 @@
 #include <QThread>
 #include <QMediaPlayer>
 #include <QFileDialog>
+#include <QDebug>
 
 #include <chat.h>
 
@@ -41,9 +42,12 @@ public:
 
 signals:
     void passToBluetooth(const QString &message);
+    void sendEntry(const QString &message);
 
 private slots:
     void fromBluetooth(const QString &message);
+
+    void displayBluetoothText(const QString &sender, const QString &message);
 
     void uiFunctions();
 
@@ -197,9 +201,6 @@ private:
     QString ImagePath;
     QString VideoPath;
 
-//    int MouthThresholdLevel;
-
-//    QVector<double> MouthWidth_PlotData;
     QVector<double> SideMouth1_PlotData;
     QVector<double> SideMouth2_PlotData;
 
@@ -207,12 +208,17 @@ private:
 
     bool SmileStatusIndicator;
 
-    int HeadTurnBlink_ThresholdLevel;
-    int SmileBlink_ThresholdLevel;
+    int HeadTurnBlink_ThresholdLevel = 40;
+    int SmileBlink_ThresholdLevel = 5;
 
     bool enableDistracted;
 
-};
+    QString tableEntry;
 
+    int mainRowCount;
+    int headTurnRowCount;
+    int blinkRowCount;
+    int yawnRowCount;
+};
 
 #endif // MAINWINDOW_H

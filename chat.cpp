@@ -189,6 +189,10 @@ qDebug() << "Connecting...";
         connect(client, SIGNAL(disconnected()), this, SLOT(clientDisconnected()));
         connect(client, SIGNAL(connected(QString)), this, SLOT(connected(QString)));
         connect(this, SIGNAL(sendMessage(QString)), client, SLOT(sendMessage(QString)));
+
+        //connect(this, SIGNAL(sendEntry(QString,QString,QString)), client, SLOT
+
+
 qDebug() << "Start client";
         client->startClient(service);
 
@@ -225,8 +229,11 @@ void Chat::sendClicked(const QString &message)
 //! [showMessage]
 void Chat::showMessage(const QString &sender, const QString &message)
 {
-    emit Distracted(message);
+    emit fromBluetooth(message);
     ui->chat->insertPlainText(QString::fromLatin1("%1: %2\n").arg(sender, message));
+    emit textDisplay(sender, message);
     ui->chat->ensureCursorVisible();
 }
 //! [showMessage]
+
+
