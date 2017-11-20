@@ -39,6 +39,7 @@ public:
     void ResetData();
     void ResetSettings();
     void ResetTriggers();
+    int currentTimeSeconds();
 
 signals:
     void passToBluetooth(const QString &message);
@@ -211,7 +212,7 @@ private:
     int HeadTurnBlink_ThresholdLevel = 40;
     int SmileBlink_ThresholdLevel = 5;
 
-    bool enableDistracted = false;
+    bool enableDistracted = true;
 
     QString tableEntry;
 
@@ -219,6 +220,12 @@ private:
     int headTurnRowCount;
     int blinkRowCount;
     int yawnRowCount;
+
+    std::vector<int> distractedRate;
+    std::vector<int> drowsyRate;
+    std::vector<int> asleepRate;
+
+    int prevTimeSeconds;
 };
 
 #endif // MAINWINDOW_H

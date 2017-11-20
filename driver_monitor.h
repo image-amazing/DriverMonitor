@@ -69,6 +69,8 @@ public:
 
     QString tableEntry;
 
+    int currentTimeSeconds();
+
 private:
     Mat image;
     const dlib::full_object_detection shape;

@@ -189,6 +189,11 @@ void driver_monitor::classify(char inst, bool &instance_trigger, double VideoTim
     }
 }
 
+int driver_monitor::currentTimeSeconds()
+{
+    return (time.hour() * 60 * 60) + (time.minute() * 60) + time.second();
+}
+
 void driver_monitor::instance_rate(std::vector<int> &instance_count, int time_span, int threshold_time, bool &display_trigger)
 {
     current_time_seconds = (time.hour() * 60 * 60) + (time.minute() * 60) + time.second();

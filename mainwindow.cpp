@@ -586,7 +586,30 @@ void MainWindow::ProcessCameraFrame()
             HeadTurnLeft.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
             if(!HeadTurnLeft.DriverStatus_string.isEmpty())
             {
-                emit passToBluetooth("Alarm");
+                distractedRate.push_back(currentTimeSeconds());
+                if(distractedRate.size() >= 1)
+                {
+                    emit passToBluetooth("AlarmA");
+                }
+//                else if(distractedRate.size() >= 2)
+//                    emit passToBluetooth("AlarmB");
+            }
+            for(unsigned int i = 0; i < distractedRate.size(); i++)
+            {
+                if((currentTimeSeconds() - distractedRate.back()) > ui->RefreshRate_spinBox->value())
+                    distractedRate.pop_back();
+            }
+
+            if(HeadTurnLeft_instanceTrigger == true)
+            {
+                if(HeadTurn_timer.elapsed() > 3000 && ((HeadTurn_timer.elapsed() - 1000) / 1000) % 3 == 0)
+                {
+                    if(currentTimeSeconds() != prevTimeSeconds)
+                    {
+                        prevTimeSeconds = currentTimeSeconds();
+                        emit passToBluetooth("AlarmB");
+                    }
+                }
             }
         }
         HeadTurnLeft.DisplayTo_QTableWidget(ui->Main_tableWidget);
@@ -613,9 +636,33 @@ void MainWindow::ProcessCameraFrame()
             HeadTurnRight.DriverStatus_Distracted(ui->HeadTurn_TimeLimit_spinBox->value(), HeadTurn_timer, HeadTurn_count);
             if(!HeadTurnRight.DriverStatus_string.isEmpty())
             {
-                emit passToBluetooth("Alarm");                
+                distractedRate.push_back(currentTimeSeconds());
+                if(distractedRate.size() >= 1)
+                {
+                    emit passToBluetooth("AlarmA");
+                }
+//                else if(distractedRate.size() >= 2)
+//                    emit passToBluetooth("AlarmB");
+            }
+            for(unsigned int i = 0; i < distractedRate.size(); i++)
+            {
+                if((currentTimeSeconds() - distractedRate.back()) > ui->RefreshRate_spinBox->value())
+                    distractedRate.pop_back();
+            }
+
+            if(HeadTurnRight_instanceTrigger == true)
+            {
+                if(HeadTurn_timer.elapsed() > 4000 && ((HeadTurn_timer.elapsed() - 1000) / 1000) % 3 == 0)
+                {
+                    if(currentTimeSeconds() != prevTimeSeconds)
+                    {
+                        prevTimeSeconds = currentTimeSeconds();
+                        emit passToBluetooth("AlarmB");
+                    }
+                }
             }
         }
+
         HeadTurnRight.DisplayTo_QTableWidget(ui->Main_tableWidget);
         if(!HeadTurnRight.DriverStatus_string.isEmpty())
         {
@@ -623,13 +670,13 @@ void MainWindow::ProcessCameraFrame()
             emit sendEntry(HeadTurnRight.tableEntry);
         }
 
-        if(!HeadTurnLeft.DriverStatus_string.isEmpty() || !HeadTurnRight.DriverStatus_string.isEmpty())
-        {
-            if(alert->state() == QMediaPlayer::PlayingState)
-                alert->setPosition(0);
-            else
-                alert->play();
-        }
+//        if(!HeadTurnLeft.DriverStatus_string.isEmpty() || !HeadTurnRight.DriverStatus_string.isEmpty())
+//        {
+//            if(alert->state() == QMediaPlayer::PlayingState)
+//                alert->setPosition(0);
+//            else
+//                alert->play();
+//        }
 
         driver_monitor LeftEye(shape);
         LeftEye.measure(41, 37, 'y', 39, 36,'x', 100);
@@ -687,24 +734,45 @@ void MainWindow::ProcessCameraFrame()
 
         Blink.DriverStatus_Drowsy(ui->Blink_ThresholdRate_spinBox->value(), Blink_rate, SlowBlink_rate, Yawn_rate);
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
+        if(!Blink.DriverStatus_string.isEmpty())
+        {
+            emit passToBluetooth("AlarmA");
+            tableEntry = Blink.tableEntry;
+            emit sendEntry(Blink.tableEntry);
+        }
+
         Blink.DriverStatus_Drowsy(ui->SlowBlink_ThresholdRate_spinBox->value(), SlowBlink_rate, Blink_rate, Yawn_rate);
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
         if(!Blink.DriverStatus_string.isEmpty())
         {
-            emit passToBluetooth("Alarm");
+            emit passToBluetooth("AlarmA");
             tableEntry = Blink.tableEntry;
             emit sendEntry(Blink.tableEntry);
         }
 
         Blink.DriverStatus_Asleep(ui->ClosedEyes_TimeLimit_spinBox->value(), Blink_timer, Blink_count);
         if(!Blink.DriverStatus_string.isEmpty())
-                emit passToBluetooth("Alarm");
+        {
+                emit passToBluetooth("AlarmA");
+        }
         Blink.DisplayTo_QTableWidget(ui->Main_tableWidget);
 
         if(!Blink.DriverStatus_string.isEmpty())
         {
             tableEntry = Blink.tableEntry;
             emit sendEntry(Blink.tableEntry);
+        }
+
+        if(Blink_instanceTrigger == true)
+        {
+            if(Blink_timer.elapsed() > 3000 && (Blink_timer.elapsed() / 1000) % 3 == 0)
+            {
+                if(currentTimeSeconds() != prevTimeSeconds)
+                {
+                    prevTimeSeconds = currentTimeSeconds();
+                    emit passToBluetooth("AlarmB");
+                }
+            }
         }
 
         driver_monitor Yawn(shape);
@@ -724,7 +792,7 @@ void MainWindow::ProcessCameraFrame()
         Yawn.DisplayTo_QTableWidget(ui->Main_tableWidget);
         if(!Yawn.DriverStatus_string.isEmpty())
         {
-            emit passToBluetooth("Alarm");
+            emit passToBluetooth("AlarmA");
             tableEntry = Yawn.tableEntry;
             emit sendEntry(Yawn.tableEntry);
         }
@@ -1151,6 +1219,7 @@ void MainWindow::on_LoadSettings_pushButton_clicked()
     ui->YawnMouth_spinBox->setValue(values.at(10));
     ui->Yawn_ThresholdTime_spinBox->setValue(values.at(11));
     ui->Yawn_ThresholdRate_spinBox->setValue(values.at(12));
+    ui->RefreshRate_spinBox->setValue(values.at(13));
     LeftEye_max = values.at(14);
     RightEye_max = values.at(15);
     ui->Blink_ThresholdRate_spinBox->setValue(values.at(16));
@@ -1437,4 +1506,10 @@ void MainWindow::on_ResetSettings_pushButton_clicked()
 
     ui->LiptoSideMouth_spinBox->setValue(20);
     ui->RefreshRate_spinBox->setValue(60);
+}
+
+int MainWindow::currentTimeSeconds()
+{
+    QTime time = QTime::currentTime();
+    return (time.hour() * 60 * 60) + (time.minute() * 60) + time.second();
 }

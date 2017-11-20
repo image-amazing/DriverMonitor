@@ -33,22 +33,22 @@ FORMS    += mainwindow.ui \
     chat.ui \
     remoteselector.ui
 
-INCLUDEPATH += C:\opencv\QT_opencv\install\include
-LIBS += -LC:\opencv\QT_opencv\install\x86\mingw\lib \
-    -lopencv_core320.dll \
-    -lopencv_highgui320.dll \
-    -lopencv_imgcodecs320.dll \
-    -lopencv_imgproc320.dll \
-    -lopencv_features2d320.dll \
-    -lopencv_calib3d320.dll \
-    -lopencv_videoio320.dll \
-    -lopencv_objdetect320.dll
+#INCLUDEPATH += C:\opencv\QT_opencv\install\include
+#LIBS += -LC:\opencv\QT_opencv\install\x86\mingw\lib \
+#    -lopencv_core320.dll \
+#    -lopencv_highgui320.dll \
+#    -lopencv_imgcodecs320.dll \
+#    -lopencv_imgproc320.dll \
+#    -lopencv_features2d320.dll \
+#    -lopencv_calib3d320.dll \
+#    -lopencv_videoio320.dll \
+#    -lopencv_objdetect320.dll
 
-QMAKE_CXXFLAGS_RELEASE += -mavx
+#QMAKE_CXXFLAGS_RELEASE += -mavx
 
-INCLUDEPATH += C:\opencv\QT_dlib\build\include
-LIBS += -LC:\opencv\QT_dlib\dlib
-LIBS += -ldlib
+#INCLUDEPATH += C:\opencv\QT_dlib\build\include
+#LIBS += -LC:\opencv\QT_dlib\dlib
+#LIBS += -ldlib
 
 DISTFILES +=
 
@@ -56,8 +56,8 @@ RESOURCES += \
     resources.qrc
 
 
-#unix: CONFIG += link_pkgconfig
-#unix: PKGCONFIG += opencv
+unix: CONFIG += link_pkgconfig
+unix: PKGCONFIG += opencv
 
-#unix: CONFIG += link_pkgconfig
-#unix: PKGCONFIG += dlib-1
+unix: CONFIG += link_pkgconfig
+unix: PKGCONFIG += dlib-1
