@@ -252,7 +252,7 @@ void driver_monitor::DriverStatus_Asleep(int threshold, QTime &instance_timer, i
     static int Blink_PrevCount = -1;
     if(instance_timer.elapsed() > threshold && Blink_PrevCount != instance_count && status == 1)
     {
-        DriverStatus_string = "Asleep";
+        DriverStatus_string = "Asleep/Distracted";
         Blink_PrevCount = instance_count;
     }
 }
@@ -274,7 +274,7 @@ void driver_monitor::DriverStatus_Asleep(int threshold, double VideoTime, double
     static int Blink_PrevCount = -1;
     if((VideoTime - StartTime) > threshold && Blink_PrevCount != instance_count && status == 1)
     {
-        DriverStatus_string = "Asleep";
+        DriverStatus_string = "Asleep/Distracted";
         Blink_PrevCount = instance_count;
     }
 }
